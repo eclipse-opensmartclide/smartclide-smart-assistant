@@ -1,0 +1,4 @@
+setuptools
+cookiecutter
+argparse
+pyyaml
