@@ -1,8 +1,0 @@
-pandas
-nltk
-numpy 
-requests 
-unidecode
-matplotlib
-seaborn
-tensorflow
