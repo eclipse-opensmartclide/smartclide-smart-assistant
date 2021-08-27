@@ -1,1 +1,1 @@
-# smartclide-smart-assistant
+# smartCLIDE-DLE
