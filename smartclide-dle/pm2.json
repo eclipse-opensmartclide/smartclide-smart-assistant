@@ -1,0 +1,20 @@
+{
+  "apps" : [
+    {
+      "name": "smartclide-dle",
+      "cwd": "smartclide-dle",
+      "interpreter": "/bin/bash",
+      "script": "launch.bash",
+      "out_file": "/var/log/smartclide-dle.log",
+      "error_file": "/var/log/smartclide-dle.err",
+    },
+    {
+      "name": "smartclide-smart-assistant",
+      "cwd": "smartclide-smart-assistant",
+      "interpreter": "/bin/bash",
+      "script": "launch.bash",
+      "out_file": "/var/log/smartclide-smart-assistant.log",
+      "error_file": "/var/log/smartclide-smart-assistant.err",
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+mongoengine
+numpy
+pandas
+scikit-learn
+coloredlogs
+pyyaml

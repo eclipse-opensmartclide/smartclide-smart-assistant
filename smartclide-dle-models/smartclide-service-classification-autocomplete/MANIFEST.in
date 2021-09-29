@@ -1,0 +1,2 @@
+include *.csv *.pkl
+recursive-include trained_models data *.csv *.pkl

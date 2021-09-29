@@ -1,0 +1,27 @@
+name: deploy
+
+on:
+  push:
+    branches: main
+
+jobs:
+  download: 
+    runs-on: [self-hosted, Linux, X64]  
+    steps:  
+    - name: download new changes
+      uses: actions/checkout@v2
+  build:
+    runs-on: [self-hosted, Linux, X64]  
+    needs: download
+    steps:  
+    - name: install spacy
+      run: sudo python3 -m pip install spacy==2.3.5
+    - name: install npl model
+      run: sudo python3 -m spacy download en_core_web_md
+      working-directory: smartclide-dle
+    - name: start services
+      run: sudo pm2 restart pm2.json --update-env
+    - name: save services
+      run: sudo pm2 save
+    - name: configure service startup
+      run: sudo pm2 startup

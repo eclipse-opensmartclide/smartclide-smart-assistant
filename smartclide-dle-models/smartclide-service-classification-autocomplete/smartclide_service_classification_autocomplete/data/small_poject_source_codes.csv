@@ -1,0 +1,919 @@
+,codes
+0,package com.t3hh4xx0r.utils.fileutils;
+1,import com.t3hh4xx0r.addons.R;
+2,import java.io.BufferedInputStream;
+3,import java.io.File;
+4,import java.io.FileInputStream;
+5,import java.io.FileOutputStream;
+6,import java.io.IOException;
+7,import java.io.InputStream;
+8,import java.io.OutputStream;
+9,import java.net.HttpURLConnection;
+10,import java.net.URL;
+11,import java.net.URLConnection;
+12,import android.app.AlertDialog;
+13,import android.app.Notification;
+14,import android.app.NotificationManager;
+15,import android.app.PendingIntent;
+16,import android.content.Context;
+17,import android.content.DialogInterface;
+18,import android.content.Intent;
+19,import android.os.Environment;
+20,import android.util.Log;
+21,public class DownloadFile {
+22,public int mPercentage;
+23,public static boolean DBG = true;
+24,"private static String TAG = ""DownloadFile"";"
+25,private static File extStorageDirectory = Environment.getExternalStorageDirectory();
+26,"private static final String DOWNLOAD_DIR = extStorageDirectory + ""/t3hh4xx0r/downloads/"";"
+27,private String OUTPUT_NAME;
+28,NotificationManager mNotificationManager;
+29,private boolean IsBeingNotified = false;
+30,private boolean mAddonIsFlashable = true;
+31,String FULL_PATH_TO_FLASHABLE;
+32,private static boolean mIsCompleted = false;
+33,private static boolean mUserWantToflash = false;
+34,* Downloads a file from the specified URLupon finishing download it will be
+35,* called {@link zipName}.
+36,* @param url The url that will be downloaded
+37,* @param zipName The name of the zip/apk once downloaded
+38,* @param flashable To determine if the pacakage should be flashed through recovery or if installation is OK
+39,public static boolean isCompleted(){
+40,return mIsCompleted;
+41,public DownloadFile(String urlString zipNameboolean flashable){
+42,OUTPUT_NAME = zipName;
+43,mAddonIsFlashable = flashable;
+44,doInBackground(url);
+45,* Downloads a file from the specified URLupon finishing download it will be
+46,* called {@link zipName}. Notifications can be passed from this constructor
+47,* to make a system notification
+48,* @param url The url that will be downloaded
+49,* @param zipName The name of the zip/apk once downloaded
+50,* @param context A context so that notifications can be passed to the system
+51,* @param flashable To determine if the pacakage should be flashed through recovery or if installation is OK
+52,public DownloadFile(String urlString zipNameContext contextboolean flashable){
+53,OUTPUT_NAME = zipName;
+54,mAddonIsFlashable = flashable;
+55,String ns = Context.NOTIFICATION_SERVICE;
+56,mNotificationManager = (NotificationManager) context.getSystemService(ns);
+57,int icon = R.drawable.icon;        // icon from resources
+58,"CharSequence tickerText = ""T3hh4xx0r"";              // ticker-text"
+59,long when = System.currentTimeMillis();         // notification time
+60,Context tcontext = context.getApplicationContext();      // application Context
+61,"CharSequence contentTitle = ""OMFGB Nightlies"";  // expanded message title"
+62,"CharSequence contentText = ""Downloading"";      // expanded message text"
+63,//Intent notificationIntent = new Intent(contextNightlies.class);
+64,Intent notificationIntent = new Intent();
+65,PendingIntent contentIntent = PendingIntent.getActivity(context0notificationIntent0);
+66,// the next two lines initialize the Notificationusing the configurations above
+67,Notification notification = new Notification(icontickerTextwhen);
+68,notification.setLatestEventInfo(tcontextcontentTitlecontentTextcontentIntent);
+69,File f = new File (DOWNLOAD_DIR + OUTPUT_NAME);
+70,IsBeingNotified = true;
+71,mNotificationManager.notify(1notification);
+72,doInBackground(url);
+73,onPostExecute(context);
+74,* This is the worker function of the service. It handles
+75,* all downloads not associated with updating the app.
+76,* @param aurl The pacakage URL to download
+77,* @return
+78,private String doInBackground(String... aurl) {
+79,"if(DBG )log(""do in background"");"
+80,int count;
+81,File downloadDir = new File (DOWNLOAD_DIR);
+82,if (!downloadDir.isDirectory()) {
+83,"if(DBG )log(""Creating download dir"" + DOWNLOAD_DIR);"
+84,downloadDir.mkdirs();
+85,try {
+86,"if(DBG )log(""Creating connection"");"
+87,URL url = new URL(aurl[0]);
+88,URLConnection conexion = url.openConnection();
+89,conexion.connect();
+90,"if(DBG )log(""Connection complete"");"
+91,int lenghtOfFile = conexion.getContentLength();
+92,InputStream input = new BufferedInputStream(url.openStream());
+93,"OutputStream output = new FileOutputStream(DOWNLOAD_DIR + ""/"" + OUTPUT_NAME);"
+94,byte data[] = new byte[1024];
+95,long total = 0;
+96,while ((count = input.read(data)) != -1) {
+97,total += count;
+98,"///log("""" + (int)((total*100)/lenghtOfFile));"
+99,output.write(data0count);
+100,if(IsBeingNotified)mNotificationManager.cancel(1);
+101,if(((int)((total*100)/lenghtOfFile)) == 100 ){
+102,"log(""The download has finished"");"
+103,mIsCompleted  = true;
+104,output.flush();
+105,output.close();
+106,input.close();
+107,} catch (Exception e) {
+108,e.printStackTrace();
+109,return null;
+110,public static boolean checkFileIsCompleted(String urlString outputname){
+111,* What needs to be done here is to check that the downloaded file is the same bit stream as the
+112,* URL that is was downloaded from.
+113,* If they are the same return true else the files are not the same and return false
+114,int lengthOfFile;
+115,File f = new File(DOWNLOAD_DIR + outputname);
+116,try{
+117,"if(DBG )log(""Creating connection"");"
+118,URL aurl = new URL(url);
+119,URLConnection conexion = aurl.openConnection();
+120,conexion.connect();
+121,"if(DBG )log(""Connection complete"");"
+122,lengthOfFile = conexion.getContentLength();
+123,catch(Exception e){
+124,lengthOfFile = -1;
+125,e.printStackTrace();
+126,"if(DBG )log(""Determining if files are the same"");"
+127,if((int)f.length() != lengthOfFile){
+128,"if(DBG )log(""Files are not the same"");"
+129,return false;
+130,"if(DBG )log(""Files are the same"");"
+131,return true;
+132,protected void onPostExecute(Context context) {
+133,"if(DBG )log(""Post executing download"");"
+134,//removeDialog(DOWNLOAD_PROGRESS);
+135,int icon = R.drawable.icon;        // icon from resources
+136,"CharSequence tickerText = ""Starting download"";              // ticker-text"
+137,long when = System.currentTimeMillis();         // notification time
+138,Context tcontext = context.getApplicationContext();      // application Context
+139,"CharSequence contentTitle = ""OMFGB Nightlies"";  // expanded message title"
+140,"CharSequence contentText = ""Download finished"";      // expanded message text"
+141,Intent notificationIntent = new Intent();
+142,PendingIntent contentIntent = PendingIntent.getActivity(context0notificationIntent0);
+143,// the next two lines initialize the Notificationusing the configurations above
+144,Notification notification = new Notification(icontickerTextwhen);
+145,notification.setLatestEventInfo(tcontextcontentTitlecontentTextcontentIntent);
+146,mNotificationManager.notify(2notification);
+147,* @param device The device script to pass
+148,* @return The string to the full path to the update script
+149,public static String updateAppManifest(String device) {
+150,String targetFileName = device;
+151,"String path =""https://raw.github.com/OMFGB/OMFGBManifests/master/"" + targetFileName;"
+152,File downloadDir = new File (DOWNLOAD_DIR);
+153,if (!downloadDir.isDirectory()) {
+154,"if(DBG )Log.d(TAG""Creating download dir"" + DOWNLOAD_DIR);"
+155,downloadDir.mkdirs();
+156,try {
+157,int count;
+158,URL url = new URL(path);
+159,URLConnection conexion = url.openConnection();
+160,conexion.connect();
+161,"if(DBG )Log.d(TAG""Connection complete"");"
+162,int lenghtOfFile = conexion.getContentLength();
+163,InputStream input = new BufferedInputStream(url.openStream());
+164,OutputStream output = new FileOutputStream(DOWNLOAD_DIR + targetFileName);
+165,byte data[] = new byte[1024];
+166,long total = 0;
+167,while ((count = input.read(data)) != -1) {
+168,total += count;
+169,"Log.d(TAG"""" + (int)((total*100)/lenghtOfFile));"
+170,output.write(data0count);
+171,output.flush();
+172,output.close();
+173,input.close();
+174,} catch (Exception e) {
+175,e.printStackTrace();
+176,return (DOWNLOAD_DIR + targetFileName);
+177,private static void log(String msg) {
+178,Log.d(TAGmsg);
+179,package com.t3hh4xx0r.utils.fileutils;
+180,import java.io.DataOutputStream;
+181,import java.io.File;
+182,import java.io.IOException;
+183,import java.text.SimpleDateFormat;
+184,import java.util.Date;
+185,import android.app.ProgressDialog;
+186,import android.os.Environment;
+187,import android.util.Log;
+188,public class Downloads {
+189,"public static String DATE = new SimpleDateFormat(""yyyy-MM-dd-HH.mm.ss"").format(new Date());"
+190,private boolean DBG = true;
+191,"private static String TAG = ""Downloads"";"
+192,private static File extStorageDirectory = Environment.getExternalStorageDirectory();
+193,"private static final String DOWNLOAD_DIR = ""/sdcard/t3hh4xx0r/downloads/"";"
+194,"public static final String EXTENDEDCMD = ""/cache/recovery/extendedcommand"";"
+195,public static String PREF_LOCATION;
+196,private static String DOWNLOAD_URL;
+197,private int DOWNLOAD_PROGRESS = 0;
+198,private static final int FLASH_ADDON = 0;
+199,private static final int FLASH_COMPLETE = 1;
+200,private static final int INSTALL_ADDON = 2;
+201,private ProgressDialog pbarDialog;
+202,private boolean mAddonIsFlashable;
+203,private boolean isSdCardPresent(){
+204,return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+205,private boolean isSdCardWriteable(){
+206,return !Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState());
+207,public static void installPackage(String outputzip) {
+208,final String OUTPUT_NAME = outputzip;
+209,Log.d(TAGOUTPUT_NAME);
+210,"Log.i(TAG""Packaging installer thread starting"");"
+211,Thread cmdThread = new Thread(){
+212,@Override
+213,public void run() {
+214,"Log.i(TAG""Packaging installer thread started"");"
+215,try{Thread.sleep(1000);}catch(InterruptedException e){ }
+216,final Runtime run = Runtime.getRuntime();
+217,DataOutputStream out = null;
+218,Process p = null;
+219,try {
+220,"Log.i(TAG""Executing su"");"
+221,"p = run.exec(""su"");"
+222,out = new DataOutputStream(p.getOutputStream());
+223,"out.writeBytes(""busybox mount -o rwremount /system\n"");"
+224,"out.writeBytes(""busybox cp "" + DOWNLOAD_DIR + OUTPUT_NAME + "" /system/app/\n"");"
+225,"out.writeBytes(""busybox mount -o roremount /system\n"");"
+226,out.flush();
+227,} catch (IOException e) {
+228,e.printStackTrace();
+229,return;
+230,cmdThread.start();
+231,public static void flashPackage(String outputzip) {
+232,final String OUTPUT_NAME = outputzip;
+233,Log.d(TAGOUTPUT_NAME);
+234,Thread cmdThread = new Thread(){
+235,@Override
+236,public void run() {
+237,"Log.i(TAG""Packaging flashing thread started"");"
+238,"File updateDirectory = new File (""/cache/recovery/"");"
+239,if (!updateDirectory.isDirectory()) {
+240,"Log.i(TAG""Creating cache dir"");"
+241,updateDirectory.mkdir();
+242,Thread.sleep(1000);
+243,catch(InterruptedException e)
+244,final Runtime run = Runtime.getRuntime();
+245,DataOutputStream out = null;
+246,Process p = null;
+247,try {
+248,"Log.i(TAG""About to flash package"");"
+249,"Log.i(TAG""Executing su"");"
+250,"p = run.exec(""su"");"
+251,out = new DataOutputStream(p.getOutputStream());
+252,"out.writeBytes(""busybox echo 'install_zip(\"""" + DOWNLOAD_DIR + OUTPUT_NAME +""\"");' > "" + EXTENDEDCMD + ""\n"");"
+253,"out.writeBytes(""reboot recovery\n"");"
+254,out.flush();
+255,} catch (IOException e) {
+256,e.printStackTrace();
+257,return;
+258,cmdThread.start();
+259,package com.t3hh4xx0r.addons;
+260,import java.io.BufferedInputStream;
+261,import java.io.DataOutputStream;
+262,import java.io.File;
+263,import java.io.FileOutputStream;
+264,import java.io.IOException;
+265,import java.io.InputStream;
+266,import java.io.OutputStream;
+267,import java.net.URL;
+268,import java.net.URLConnection;
+269,import java.net.HttpURLConnection;
+270,import android.app.AlertDialog;
+271,import android.app.DownloadManager;
+272,import android.app.DownloadManager.Query;
+273,import android.app.DownloadManager.Request;
+274,import android.app.Notification;
+275,import android.app.NotificationManager;
+276,import android.app.PendingIntent;
+277,import android.app.ProgressDialog;
+278,import android.content.BroadcastReceiver;
+279,import android.content.Context;
+280,import android.content.DialogInterface;
+281,import android.content.Intent;
+282,import android.content.pm.ActivityInfo;
+283,import android.content.IntentFilter;
+284,import android.net.Uri;
+285,import android.os.AsyncTask;
+286,import android.os.Bundle;
+287,import android.os.Build;
+288,import android.os.Environment;
+289,import android.os.Handler;
+290,import android.os.Looper;
+291,import android.os.Message;
+292,import android.preference.Preference;
+293,import android.preference.PreferenceCategory;
+294,import android.preference.PreferenceActivity;
+295,import android.preference.PreferenceManager;
+296,import android.preference.PreferenceScreen;
+297,import android.view.Menu;
+298,import android.view.MenuItem;
+299,import android.view.View;
+300,import android.widget.AdapterView;
+301,import android.widget.ArrayAdapter;
+302,import android.widget.TextView;
+303,import android.widget.AdapterView.OnItemClickListener;
+304,import java.text.SimpleDateFormat;
+305,import java.util.Date;
+306,import android.util.DisplayMetrics;
+307,import android.util.Log;
+308,import android.util.Slog;
+309,public class Addons extends PreferenceActivity {
+310,"public static String DATE = new SimpleDateFormat(""yyyy-MM-dd-HH.mm.ss"").format(new Date());"
+311,private boolean DBG = true;
+312,"private String TAG = ""Addons"";"
+313,//Constants for addonsties to android:key value in addons.xml
+314,"private static final String GOOGLE_APPS = ""google_apps_addon"";"
+315,"private static final String SBC1 = ""sbc_1"";"
+316,"private static final String OMFGBMECHACFS = ""omfgbmechacfs"";"
+317,"private static final String OMFGBMECHABFS = ""omfgbmechabfs"";"
+318,"private static final String OMFGBMECHAKANGBANG = ""omfgbmechakangbang"";"
+319,"private static final String LEAN = ""lean"";"
+320,"private static final String OMFT = ""omft"";"
+321,"public static final String EXTENDEDCMD = ""/cache/recovery/extendedcommand"";"
+322,"public static String CWM_DOWNLOAD_DIR = ""/sdcard/t3hh4xx0r/downloads/"";"
+323,"public static String DOWNLOAD_DIR = ""/mnt/sdcard/t3hh4xx0r/downloads/"";"
+324,private static String OUTPUT_NAME;
+325,private static String DOWNLOAD_URL;
+326,private static final int DOWNLOAD_ADDON = 0;
+327,private static final int FLASH_ADDON = 1;
+328,private static final int INSTALL_ADDON = 2;
+329,private long enqueue;
+330,private DownloadManager dm;
+331,private Preference mGoogleApps;
+332,private Preference mSBC1;
+333,private Preference mOMFGBmechaKernelCfs;
+334,private Preference mOMFGBmechaKernelBfs;
+335,private Preference mOMFGBmechaKernelKangBang;
+336,private Preference mLean;
+337,private Preference mOMFT;
+338,NotificationManager mNotificationManager;
+339,private boolean mIsFlashable = false;
+340,@Override
+341,public void onCreate(Bundle savedInstanceState) {
+342,super.onCreate(savedInstanceState);
+343,addPreferencesFromResource(R.xml.addons);
+344,PreferenceScreen prefSet = getPreferenceScreen();
+345,mGoogleApps = prefSet.findPreference(GOOGLE_APPS);
+346,mSBC1 = prefSet.findPreference(SBC1);
+347,"if ((!Build.MODEL.equals(""Incredible""))) {"
+348,"PreferenceCategory kernelCategory = (PreferenceCategory) findPreference(""kernel_category"");"
+349,kernelCategory.removePreference(mSBC1);
+350,mOMFGBmechaKernelCfs = prefSet.findPreference(OMFGBMECHACFS);
+351,"if ((!Build.MODEL.equals(""Thunderbolt""))) {"
+352,"PreferenceCategory kernelCategory = (PreferenceCategory) findPreference(""kernel_category"");"
+353,kernelCategory.removePreference(mOMFGBmechaKernelCfs);
+354,mOMFGBmechaKernelBfs = prefSet.findPreference(OMFGBMECHABFS);
+355,"if ((!Build.MODEL.equals(""Thunderbolt""))) {"
+356,"PreferenceCategory kernelCategory = (PreferenceCategory) findPreference(""kernel_category"");"
+357,kernelCategory.removePreference(mOMFGBmechaKernelBfs);
+358,mOMFGBmechaKernelKangBang = prefSet.findPreference(OMFGBMECHAKANGBANG);
+359,"if ((!Build.MODEL.equals(""Thunderbolt""))) {"
+360,"PreferenceCategory kernelCategory = (PreferenceCategory) findPreference(""kernel_category"");"
+361,kernelCategory.removePreference(mOMFGBmechaKernelKangBang);
+362,mLean = prefSet.findPreference(LEAN);
+363,"if ((!Build.MODEL.equals(""Thunderbolt""))) {"
+364,"PreferenceCategory kernelCategory = (PreferenceCategory) findPreference(""kernel_category"");"
+365,kernelCategory.removePreference(mLean);
+366,mOMFT = prefSet.findPreference(OMFT);
+367,switch (getResources().getDisplayMetrics().densityDpi) {
+368,case DisplayMetrics.DENSITY_MEDIUM:
+369,"PreferenceCategory appsCategory = (PreferenceCategory) findPreference(""apps_category"");"
+370,appsCategory.removePreference(mOMFT);
+371,break;
+372,BroadcastReceiver onComplete=new BroadcastReceiver() {
+373,public void onReceive(Context contextIntent intent) {
+374,String ns = Context.NOTIFICATION_SERVICE;
+375,mNotificationManager = (NotificationManager) context.getSystemService(ns);
+376,int icon = R.drawable.icon;
+377,"CharSequence tickerText = ""Download Finished"";"
+378,long when = System.currentTimeMillis();
+379,Context tcontext = context.getApplicationContext();
+380,"CharSequence contentTitle = ""T3hh4xx0r Addons"";"
+381,"CharSequence contentText = OUTPUT_NAME + "" finished downloading"";"
+382,Intent notificationIntent = new Intent(contextAddons.class);
+383,PendingIntent contentIntent = PendingIntent.getActivity(context0notificationIntent0);
+384,final Notification notification = new Notification(icontickerTextwhen);
+385,notification.setLatestEventInfo(tcontextcontentTitlecontentTextcontentIntent);
+386,mNotificationManager.notify(1notification);
+387,checkFileStatus();
+388,registerReceiver(onCompletenew IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+389,private boolean isSdCardPresent(){
+390,return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+391,private boolean isSdCardWriteable(){
+392,return !Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState());
+393,public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreenPreference preference) {
+394,boolean value;
+395,if(this.isSdCardPresent() && this.isSdCardWriteable()){
+396,if (preference == mGoogleApps) {
+397,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/GAPPS.zip"";"
+398,"OUTPUT_NAME = ""Gapps.zip"";"
+399,mIsFlashable = true;
+400,} else if (preference == mSBC1) {
+401,"OUTPUT_NAME = ""OMFGBk-sbc_1.zip"";"
+402,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/Addons/OMFGBk-sbc-1.zip"";"
+403,mIsFlashable = true;
+404,} else if (preference == mOMFGBmechaKernelCfs) {
+405,"OUTPUT_NAME = ""OMFGB-Drod_Cfs.zip"";"
+406,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/Addons/OMFGB-Drod_Cfs.zip"";"
+407,mIsFlashable = true;
+408,} else if (preference == mOMFGBmechaKernelBfs) {
+409,"OUTPUT_NAME = ""OMFGB-Drod_Bfs.zip"";"
+410,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/Addons/OMFGB-Drod_Bfs.zip"";"
+411,mIsFlashable = true;
+412,} else if (preference == mOMFGBmechaKernelKangBang) {
+413,"OUTPUT_NAME = ""OMFGB-Drod_KangBang.zip"";"
+414,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/Addons/OMFGB-Drod_KangBang.zip"";"
+415,mIsFlashable = true;
+416,} else if (preference == mLean) {
+417,"OUTPUT_NAME = ""imoseyon_leanKernel_v3.1.6CM7.zip"";"
+418,"DOWNLOAD_URL = ""http://www.androiddoes.net/~imoseyon/imoseyon_leanKernel_v3.1.6CM7.zip"";"
+419,mIsFlashable = true;
+420,} else if (preference == mOMFT) {
+421,"OUTPUT_NAME = ""OMFT.apk"";"
+422,"DOWNLOAD_URL = ""http://r2doesinc.bitsurge.net/Addons/OMFT.apk"";"
+423,mIsFlashable = false;
+424,checkFileStatus();
+425,return true;
+426,private Handler handler = new Handler() {
+427,@Override
+428,public void handleMessage(Message msg) {
+429,switch(msg.what){
+430,case FLASH_ADDON:
+431,flashPackage();
+432,break;
+433,case INSTALL_ADDON:
+434,installPackage();
+435,break;
+436,case DOWNLOAD_ADDON:
+437,downloadPackage();
+438,break;
+439,return;
+440,public void flashPackage() {
+441,Thread cmdThread = new Thread(){
+442,@Override
+443,public void run() {
+444,"File updateDirectory = new File (""/cache/recovery/"");"
+445,if (!updateDirectory.isDirectory()) {
+446,updateDirectory.mkdir();
+447,Looper.prepare();
+448,try{Thread.sleep(1000);}catch(InterruptedException e){ }
+449,final Runtime run = Runtime.getRuntime();
+450,DataOutputStream out = null;
+451,Process p = null;
+452,try {
+453,"p = run.exec(""su"");"
+454,out = new DataOutputStream(p.getOutputStream());
+455,"out.writeBytes(""busybox echo 'rm -r /data/dalvik-cache' > "" + EXTENDEDCMD + ""\n"");"
+456,"out.writeBytes(""busybox echo 'rm -r /cache/dalvik-cache' > "" + EXTENDEDCMD + ""\n"");"
+457,"out.writeBytes(""busybox echo 'install_zip(\"""" + CWM_DOWNLOAD_DIR + OUTPUT_NAME +""\"");' > "" + EXTENDEDCMD + ""\n"");"
+458,"out.writeBytes(""reboot recovery\n"");"
+459,out.flush();
+460,} catch (IOException e) {
+461,e.printStackTrace();
+462,return;
+463,cmdThread.start();
+464,public void installPackage() {
+465,Intent intent = new Intent(Intent.ACTION_VIEW);
+466,"intent.setDataAndType(Uri.fromFile(new File(DOWNLOAD_DIR + OUTPUT_NAME))""application/vnd.android.package-archive"");"
+467,startActivity(intent);
+468,public void downloadPackage() {
+469,"Slog.d(TAG""Download for "" + OUTPUT_NAME + "" started."");"
+470,File downloadDir = new File (DOWNLOAD_DIR);
+471,if (!downloadDir.isDirectory()) {
+472,downloadDir.mkdir();
+473,DownloadManager mDownloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+474,Uri uri = Uri.parse(DOWNLOAD_URL);
+475,DownloadManager.Request mRequest =  new  DownloadManager.Request (uri);
+476,"mRequest.setTitle (""T3hh4xx0r Addons"");"
+477,mRequest.setDescription (OUTPUT_NAME);
+478,File file = new File(DOWNLOAD_DIR + OUTPUT_NAME);
+479,mRequest.setDestinationUri(Uri.fromFile(file));
+480,mRequest.setShowRunningNotification(true);
+481,mRequest.setVisibleInDownloadsUi(true);
+482,long downloadId = mDownloadManager.enqueue(mRequest);
+483,public void checkFileStatus() {
+484,File f = new File (DOWNLOAD_DIR + OUTPUT_NAME);
+485,if (f.exists()) {
+486,"Slog.d(TAG""File is found"");"
+487,flashAlertBox();
+488,} else {
+489,"Slog.d(TAG""File not foundstarting DL."");"
+490,handler.sendEmptyMessage(DOWNLOAD_ADDON);
+491,private void log(String msg) {
+492,Log.d(TAGmsg);
+493,public void flashAlertBox() {
+494,AlertDialog dialog = new AlertDialog.Builder(Addons.this).create();
+495,"dialog.setTitle(""T3hh4xx0r Addons"");"
+496,dialog.setCancelable(true);
+497,if (mIsFlashable) {
+498,"dialog.setMessage(""About to flash "" + OUTPUT_NAME + ""!"");"
+499,"dialog.setButton(""Ok""new DialogInterface.OnClickListener() {"
+500,public void onClick(DialogInterface dialogint whichButton) {
+501,handler.sendEmptyMessage(FLASH_ADDON);
+502,} else {
+503,"dialog.setMessage(""About to install "" + OUTPUT_NAME + ""!"");"
+504,"dialog.setButton(""Ok""new DialogInterface.OnClickListener() {"
+505,public void onClick(DialogInterface dialogint whichButton) {
+506,handler.sendEmptyMessage(INSTALL_ADDON);
+507,dialog.show();
+508,* Copyright (C) 2009 The Android Open Source Project
+509,"* Licensed under the Apache LicenseVersion 2.0 (the ""License"");"
+510,* you may not use this file except in compliance with the License.
+511,* You may obtain a copy of the License at
+512,*      http://www.apache.org/licenses/LICENSE-2.0
+513,* Unless required by applicable law or agreed to in writingsoftware
+514,"* distributed under the License is distributed on an ""AS IS"" BASIS"
+515,* WITHOUT WARRANTIES OR CONDITIONS OF ANY KINDeither express or implied.
+516,* See the License for the specific language governing permissions and
+517,* limitations under the License.
+518,package com.t3hh4xx0r.addons;
+519,import android.content.Context;
+520,import android.content.res.TypedArray;
+521,import android.graphics.drawable.Drawable;
+522,import android.preference.Preference;
+523,import android.util.AttributeSet;
+524,import android.view.View;
+525,import android.widget.ImageView;
+526,public class IconPreferenceScreen extends Preference {
+527,private Drawable mIcon;
+528,public IconPreferenceScreen(Context contextAttributeSet attrs) {
+529,this(contextattrs0);
+530,public IconPreferenceScreen(Context contextAttributeSet attrsint defStyle) {
+531,super(contextattrsdefStyle);
+532,setLayoutResource(R.layout.preference_icon);
+533,TypedArray a = context.obtainStyledAttributes(attrs
+534,R.styleable.IconPreferenceScreendefStyle0);
+535,mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
+536,@Override
+537,public void onBindView(View view) {
+538,super.onBindView(view);
+539,ImageView imageView = (ImageView) view.findViewById(R.id.icon);
+540,if (imageView != null && mIcon != null) {
+541,imageView.setImageDrawable(mIcon);
+542,package com.t3hh4xx0r.addons.nightlies;
+543,import java.io.File;
+544,import java.io.FileInputStream;
+545,import java.io.FileNotFoundException;
+546,import java.io.InputStream;
+547,import org.json.JSONArray;
+548,import org.json.JSONObject;
+549,import com.t3hh4xx0r.utils.fileutils.DownloadFile;
+550,import android.app.AlertDialog;
+551,import android.app.DownloadManager;
+552,import android.app.Notification;
+553,import android.app.NotificationManager;
+554,import android.app.PendingIntent;
+555,import android.app.ProgressDialog;
+556,import android.content.BroadcastReceiver;
+557,import android.content.Context;
+558,import android.content.DialogInterface;
+559,import android.content.Intent;
+560,import android.content.IntentFilter;
+561,import android.os.Bundle;
+562,import android.os.Handler;
+563,import android.os.Message;
+564,import android.preference.Preference;
+565,import android.preference.PreferenceActivity;
+566,import android.preference.PreferenceCategory;
+567,import android.preference.PreferenceScreen;
+568,import android.util.Log;
+569,import android.view.Menu;
+570,import android.view.MenuInflater;
+571,import android.view.MenuItem;
+572,import android.view.ViewGroup.LayoutParams;
+573,import android.widget.ListView;
+574,import android.widget.RelativeLayout;
+575,import com.t3hh4xx0r.addons.R;
+576,public class Nightlies extends PreferenceActivity {
+577,RelativeLayout mPreferenceContainer;
+578,private ListView mPreferenceListView;
+579,private ProgressDialog mProgressDialog;
+580,//private NightlyAdapter mAdapter;
+581,PreferenceScreen mRootPreference;
+582,Preference mRoot;
+583,"private final String TAG = ""JSON Preference Activity"";"
+584,NightlyReceiver mReceiver;
+585,private Runnable mJSONRunnable;
+586,private boolean mShowingWaitMessage = false;
+587,private static final int DOWNLOAD_COMPLETE = 1;
+588,//This is needed for device permanace for intents that
+589,// do not send the device type with it. IE. notifications
+590,private static String mDeviceScript;
+591,"private static final String mScriptBaseUrl = ""https://raw.github.com/OMFGB/OMFGBManifests/master/"";"
+592,"private String externalStorageDir = ""/mnt/sdcard/t3hh4xx0r/downloads/"";"
+593,private static boolean mFlashOK = false;
+594,/** Called when the activity is first created. */
+595,@Override
+596,public void onCreate(Bundle savedInstanceState) {
+597,super.onCreate(savedInstanceState);
+598,mFlashOK = true;
+599,Intent i = this.getIntent();
+600,if(mDeviceScript == null){
+601,// We need to retrive the device script namebut only once
+602,"mDeviceScript = i.getStringExtra(""DownloadScript"");"
+603,"if(mDeviceScript==null)mDeviceScript=""sholes.js"";"
+604,mPreferenceContainer = new RelativeLayout(this);
+605,mPreferenceContainer.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENTLayoutParams.FILL_PARENT));
+606,mPreferenceListView = new ListView(this);
+607,mPreferenceListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENTLayoutParams.FILL_PARENT));
+608,mPreferenceListView.setId(android.R.id.list);
+609,mJSONRunnable = new Runnable(){
+610,@Override
+611,public void run() {
+612,// TODO Auto-generated method stub
+613,mRootPreference = createPreferenceHierarchy();
+614,mHandler.sendEmptyMessage(DOWNLOAD_COMPLETE);
+615,Thread Download = new Thread(mJSONRunnable);
+616,Download.start();
+617,IntentFilter filter = new IntentFilter();
+618,filter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
+619,filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+620,if(mReceiver == null){
+621,"Log.i(TAG""Registering reciver"");"
+622,mReceiver = new NightlyReceiver();
+623,registerReceiver(mReceiverfilter);
+624,mShowingWaitMessage = true;
+625,mProgressDialog = ProgressDialog.show(Nightlies.this
+626,"""Please wait...""""Retrieving data ...""true);"
+627,@Override
+628,public boolean onCreateOptionsMenu(Menu menu) {
+629,MenuInflater inflater = getMenuInflater();
+630,inflater.inflate(R.menu.refresh_nightliesmenu);
+631,return true;
+632,@Override
+633,public boolean onOptionsItemSelected(MenuItem item) {
+634,// Handle item selection
+635,switch (item.getItemId()) {
+636,case R.id.refresh_menu :
+637,refreshNightlies();
+638,return true;
+639,default:
+640,return super.onOptionsItemSelected(item);
+641,private void refreshNightlies() {
+642,mJSONRunnable = new Runnable(){
+643,@Override
+644,public void run() {
+645,// TODO Auto-generated method stub
+646,mRootPreference = createPreferenceHierarchy();
+647,mHandler.sendEmptyMessage(DOWNLOAD_COMPLETE);
+648,Thread Download = new Thread(mJSONRunnable);
+649,Download.start();
+650,mShowingWaitMessage = true;
+651,mProgressDialog = ProgressDialog.show(Nightlies.this
+652,"""Please wait...""""Retrieving data ...""true);"
+653,// Define the Handler that receives messages from the thread and update the progress
+654,final Handler mHandler = new Handler()
+655,public void handleMessage(Message msg)
+656,switch(msg.what){
+657,case DOWNLOAD_COMPLETE:
+658,finishUIConstruction();
+659,if(mShowingWaitMessage)mProgressDialog.dismiss();
+660,mShowingWaitMessage = false;
+661,break;
+662,"Log.d(TAG""handleMessage:""+ msg.toString());"
+663,public void finishUIConstruction(){
+664,mRootPreference.bind(mPreferenceListView);
+665,"Log.i(TAG""mPreferenceListView: "" + mPreferenceListView.getCount());"
+666,mPreferenceContainer.removeAllViews();
+667,mPreferenceContainer.addView(mPreferenceListView);
+668,setContentView(mPreferenceContainer);
+669,setPreferenceScreen(mRootPreference);
+670,@Override
+671,public void onDestroy(){
+672,super.onDestroy();
+673,"Log.e(TAG""OnDestroy Called"");"
+674,unregisterReceiver(mReceiver);
+675,public class NightlyReceiver extends BroadcastReceiver{
+676,boolean flash = false;
+677,@Override
+678,public void onReceive(Context contextIntent intent) {
+679,"Log.e(TAG""I am receiver"");"
+680,if(intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)){
+681,"Log.e(TAG""Reciving "" + DownloadManager.ACTION_DOWNLOAD_COMPLETE);"
+682,String ns = Context.NOTIFICATION_SERVICE;
+683,NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+684,int icon = R.drawable.icon;        // icon from resources
+685,"CharSequence tickerText = ""T3HHXX0R"";              // ticker-text"
+686,long when = System.currentTimeMillis();         // notification time
+687,"CharSequence contentTitle = ""OMFGB Nightlies"";  // expanded message title"
+688,"CharSequence contentText = ""Download completed"";      // expanded message text"
+689,Intent notificationIntent = new Intent(contextNightlies.class);
+690,PendingIntent contentIntent = PendingIntent.getActivity(context0notificationIntent0);
+691,// the next two lines initialize the Notificationusing the configurations above
+692,Notification notification = new Notification(icontickerTextwhen);
+693,notification.setLatestEventInfo(contextcontentTitlecontentTextcontentIntent);
+694,final int T3HHXX0R_ID = 1;
+695,mNotificationManager.notify(T3HHXX0R_IDnotification);
+696,if(intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)){
+697,"Log.e(TAG""Reciving "" + DownloadManager.ACTION_NOTIFICATION_CLICKED);"
+698,Intent notificationIntent = new Intent(contextNightlies.class);
+699,// Curently this does not workuse as reference as to what might
+700,// http://www.java2s.com/Open-Source/Android/android-platform-apps
+701,// /Browser/com/android/browser/OpenDownloadReceiver.java.htm
+702,startActivity(notificationIntent);
+703,private PreferenceScreen createPreferenceHierarchy(){
+704,// The root preference
+705,PreferenceScreen PreferenceRoot = getNightlies();
+706,return PreferenceRoot;
+707,private PreferenceScreen getNightlies(){
+708,PreferenceScreen PreferenceRoot = getPreferenceManager().createPreferenceScreen(this);
+709,PreferenceCategory cat =  new PreferenceCategory(this);
+710,"cat.setTitle(""OMFGB Nightlies"");"
+711,PreferenceRoot.addPreference(cat);
+712,"String x = """";"
+713,InputStream is;
+714,// Need to actually put our sript locatio here
+715,"Log.d(TAG""Begining json parsing"");"
+716,//is = this.getResources().openRawResource(R.raw.jsonomfgb);
+717,File updateFile = new File(externalStorageDir + mDeviceScript);
+718,try{
+719,Log.i(TAGupdateFile.toString());
+720,File f = new File(externalStorageDir);
+721,if(!f.exists()){
+722,f.mkdirs();
+723,"Log.i(TAG""File diretory does not existcreating it"");"
+724,f = null;
+725,"f = new File(externalStorageDir + ""/"");"
+726,// Needed because the manager does not handle https connections
+727,DownloadFile.updateAppManifest(mDeviceScript);
+728,is = new FileInputStream(updateFile);
+729,catch(FileNotFoundException e){
+730,e.printStackTrace();
+731,"Log.d(TAG""Could not update app from file resourcethe file was not found. Reverting to nothing"");"
+732,is = null;
+733,if(is != null){
+734,byte [] buffer = new byte[is.available()];
+735,while (is.read(buffer) != -1);
+736,String jsontext = new String(buffer);
+737,JSONArray entries = new JSONArray(jsontext);
+738,"Log.d(TAG""Json parsing finished"");"
+739,"x = ""JSON parsed.\nThere are ["" + entries.length() + ""] entries.\n"";"
+740,int i;
+741,"Log.i(TAG""The number of entries is: "" + entries.length());"
+742,"Log.d(TAG""Starting preference resolver"");"
+743,for (i=0;i<entries.length();i++)
+744,NightlyObject n = new NightlyObject();
+745,JSONObject post = entries.getJSONObject(i);
+746,"n.setDate(post.getString(""date""));"
+747,"n.setBase(post.getString(""base""));"
+748,"n.setDevice(post.getString(""device""));"
+749,"n.setURL(post.getString(""url""));"
+750,"n.setVersion(post.getString(""version""));"
+751,"n.setZipName(post.getString(""name""));"
+752,"n.setInstallable(post.getString(""installable""));"
+753,"n.setDescription(post.getString(""description""));"
+754,PreferenceScreen inscreen = getPreferenceManager().createPreferenceScreen(this);
+755,inscreen.setSummary(n.getDescription());
+756,inscreen.setTitle(n.getDate());
+757,// Set the click listener for each preference
+758,OnNightlyPreferenceClickListener listner = new OnNightlyPreferenceClickListener(nithis);
+759,inscreen.setOnPreferenceClickListener(listner);
+760,// Finally add the preference to the heirachy
+761,Log.i(TAG(String) inscreen.getTitle());
+762,cat.addPreference(inscreen);
+763,"Log.i(TAG""Preference screen added with nightly object"");"
+764,Log.d(TAGx);
+765,else{
+766,// Tell the user here that the
+767,// manifest is messed up
+768,// and to contact us
+769,"AlertBox(""Warning""""Please contact the rom developers"");"
+770,catch (Exception je)
+771,Log.e(TAGje.getMessage());
+772,je.printStackTrace();
+773,return PreferenceRoot;
+774,protected void AlertBox(String titleString mymessage)
+775,new AlertDialog.Builder(this)
+776,.setMessage(mymessage)
+777,.setTitle(title)
+778,.setCancelable(false)
+779,".setPositiveButton(""OK"""
+780,new DialogInterface.OnClickListener() {
+781,public void onClick(DialogInterface dialogint whichButton){
+782,.show();
+783,package com.t3hh4xx0r.addons.nightlies;
+784,import android.view.View;
+785,import android.widget.LinearLayout;
+786,import android.widget.TextView;
+787,public class NightlyObject {
+788,private String mURL;
+789,private String mVersion;
+790,private String mBase;
+791,private String mDevice;
+792,private String mDate;
+793,private String mZipName;
+794,private String mInstallable;
+795,private String mDescription;
+796,LinearLayout mNightlyLayout;
+797,TextView mNightlyVersion;
+798,TextView mRomBaseVersion;
+799,TextView mCompiledDate;
+800,* @param mDevice the mDevice to set
+801,public void setDevice(String mDevice) {
+802,this.mDevice = mDevice;
+803,* @return the mDevice
+804,public String getDevice() {
+805,return mDevice;
+806,* @param mBase the mBase to set
+807,public void setBase(String mBase) {
+808,this.mBase = mBase;
+809,* @return the mBase
+810,public String getBase() {
+811,return mBase;
+812,* @param mDate the mDate to set
+813,public void setDate(String mDate) {
+814,this.mDate = mDate;
+815,* @return the mDate
+816,public String getDate() {
+817,return mDate;
+818,* @param mVersion the mVersion to set
+819,public void setVersion(String mVersion) {
+820,this.mVersion = mVersion;
+821,* @return the mVersion
+822,public String getVersion() {
+823,return mVersion;
+824,* @param mURL the mURL to set
+825,public void setURL(String mURL) {
+826,this.mURL = mURL;
+827,* @return the mURL
+828,public String getURL() {
+829,return mURL;
+830,* @param mZipName the mZipName to set
+831,public void setZipName(String mZipName) {
+832,this.mZipName = mZipName;
+833,* @return the mZipName
+834,public String getZipName() {
+835,return mZipName;
+836,* @param mInstallable the mInstallable to set
+837,public void setInstallable(String mInstallable) {
+838,this.mInstallable = mInstallable;
+839,* @return the mInstallable
+840,public String getInstallable() {
+841,return mInstallable;
+842,public void setDescription(String mDescription) {
+843,this.mDescription = mDescription;
+844,public String getDescription() {
+845,return mDescription;
+846,package com.t3hh4xx0r.addons.nightlies;
+847,import java.io.File;
+848,import com.t3hh4xx0r.utils.fileutils.Downloads;
+849,import android.app.AlertDialog;
+850,import android.app.DownloadManager;
+851,import android.content.Context;
+852,import android.content.DialogInterface;
+853,import android.net.Uri;
+854,import android.preference.Preference;
+855,import android.preference.Preference.OnPreferenceClickListener;
+856,import android.util.Log;
+857,public class OnNightlyPreferenceClickListener implements OnPreferenceClickListener {
+858,"private final String TAG = ""OnNightlyPreferenceClick"";"
+859,NightlyObject mNightly;
+860,int mPosition;
+861,Context mContext;
+862,"private String externalStorageDir = ""/mnt/sdcard/t3hh4xx0r/downloads"";"
+863,"private String DOWNLOAD_DIR = externalStorageDir+ ""/"";"
+864,OnNightlyPreferenceClickListener(NightlyObject oint positionContext context){
+865,mNightly = o;
+866,mPosition = position;
+867,mContext = context;
+868,@Override
+869,public boolean onPreferenceClick(Preference v) {
+870,Log.d(TAGv.getSummary().toString()  );
+871,Log.d(TAGv.getTitle().toString()  );
+872,"File check =  new File(externalStorageDir+ ""/"" + mNightly.getZipName());"
+873,if(!check.exists()){
+874,DownloadManager dman = (DownloadManager) mContext.getSystemService(mContext.DOWNLOAD_SERVICE);
+875,File f = new File(externalStorageDir);
+876,if(!f.exists()){
+877,f.mkdirs();
+878,"Log.i(TAG""File diretory does not existcreating it"");"
+879,f = null;
+880,"f = new File(externalStorageDir+ ""/"" + mNightly.getZipName());"
+881,Uri down = Uri.parse(mNightly.getURL());
+882,DownloadManager.Request req = new DownloadManager.Request(down);
+883,req.setShowRunningNotification(true);
+884,req.setVisibleInDownloadsUi(false);
+885,req.setDestinationUri(Uri.fromFile(f));
+886,dman.enqueue(req);
+887,else{
+888,check = null;
+889,"FlashAlertBox(""Warning:""""About to flash package""Boolean.parseBoolean(mNightly.getInstallable())mNightly.getZipName());"
+890,// mNightly.get
+891,// TODO Auto-generated method stub
+892,return false;
+893,protected void FlashAlertBox(String titleString mymessagefinal boolean Installablefinal String OUTPUT_NAME)
+894,new AlertDialog.Builder(mContext)
+895,.setMessage(mymessage)
+896,.setTitle(title)
+897,.setCancelable(false)
+898,".setPositiveButton(""OK"""
+899,new DialogInterface.OnClickListener() {
+900,public void onClick(DialogInterface dialogint whichButton){
+901,Thread FlashThread = new Thread(){
+902,@Override
+903,public void	run(){
+904,File f = new File (DOWNLOAD_DIR + OUTPUT_NAME);
+905,if(f.exists() ){
+906,"Log.d(TAG""User approved flashingbegining flash. Installable = "" + String.valueOf(Installable));"
+907,"Log.i(TAG""File location is: ""+ f.toString());"
+908,if (Installable)
+909,Downloads.installPackage(OUTPUT_NAME );
+910,} else
+911,Downloads.flashPackage(OUTPUT_NAME);
+912,FlashThread.run();
+913,".setNegativeButton(""Cancel""new DialogInterface.OnClickListener() {"
+914,public void onClick(DialogInterface dialogint whichButton){
+915,// Do nothing
+916,"Log.d(TAG""User did not approve flashing."");"
+917,.show();

@@ -1,0 +1,29 @@
+name: deploy
+
+on:
+  push:
+    branches: main
+
+jobs:
+
+  download: 
+    runs-on: [self-hosted, Linux, X64]  
+    steps:  
+    - name: download new changes
+      uses: actions/checkout@v2
+
+  install_models:
+    runs-on: [self-hosted, Linux, X64]  
+    needs: download
+    steps:
+
+    - name: install cbr model
+      run: sudo python3 -m pip install . --upgrade
+      working-directory: cbr-gherkin-recommendation
+
+    - name: install service classification and code autocomplete model
+      run: sudo python3 -m pip install . --upgrade
+      working-directory: smartclide-service-classification-autocomplete
+
+    - name: restart smartclide-dle
+      run: sudo pm2 restart smartclide-smart-assistant smartclide-dle

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn20="http://www.omg.org/bpmn20" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns="http://www.jboss.org/drools" xmlns:ns="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" id="_Ij6tsItIEemS2vwQqZKIHQ" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.0.Final-v20180515-1642-B1" targetNamespace="http://www.omg.org/bpmn20">
+   <bpmn2:process id="users"  name="users">
+       
+      <bpmn2:sequenceFlow id="_DBA10C00-6407-4EF5-9D85-01177AE8F39F" sourceRef="_5A1A031B-CA99-4CB7-BC07-A730CE95D655" targetRef="_08C87A94-E5F4-41B4-A38B-3305342E916B" />
+      <bpmn2:sequenceFlow id="_BF17E37C-6984-4F27-9B6A-A9880E95B019" name="No" sourceRef="_13BAF867-3CA8-4C6F-85C6-D3FD748D07D2" targetRef="_95885F94-555D-485A-BB86-5E835B9C3389" />
+      <bpmn2:sequenceFlow id="_4EFC11AE-52BB-4EEF-B241-CFAAE4B7AE93" name="Yes" sourceRef="_13BAF867-3CA8-4C6F-85C6-D3FD748D07D2" targetRef="_E5D17755-D671-43ED-BD7D-F6538933069C" />
+      <bpmn2:sequenceFlow id="_52A670E9-9448-4BDA-8589-FC646BC41FC7" sourceRef="_08C87A94-E5F4-41B4-A38B-3305342E916B" targetRef="_13BAF867-3CA8-4C6F-85C6-D3FD748D07D2" />
+      <bpmn2:sequenceFlow id="_4EB288EA-3135-4B97-BB46-E77159F78832" sourceRef="_E5D17755-D671-43ED-BD7D-F6538933069C" targetRef="_FD4D7A19-558E-4347-8CFE-376792FEDA57" />
+          
+          
+      <bpmn2:startEvent id="_5A1A031B-CA99-4CB7-BC07-A730CE95D655" name="StartProcess">
+         <bpmn2:outgoing>_DBA10C00-6407-4EF5-9D85-01177AE8F39F</bpmn2:outgoing>
+      </bpmn2:startEvent>
+      
+      <bpmn2:serviceTask id="_08C87A94-E5F4-41B4-A38B-3305342E916B" name="Find user" implementation="Java" operationRef="_08C87A94-E5F4-41B4-A38B-3305342E916B_ServiceOperation">
+         <bpmn2:incoming>_DBA10C00-6407-4EF5-9D85-01177AE8F39F</bpmn2:incoming>
+         <bpmn2:outgoing>_52A670E9-9448-4BDA-8589-FC646BC41FC7</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      
+      <bpmn2:serviceTask id="_E5D17755-D671-43ED-BD7D-F6538933069C"  name="Audit user"  operationRef="_E5D17755-D671-43ED-BD7D-F6538933069C_ServiceOperation">
+         <bpmn2:incoming>_4EFC11AE-52BB-4EEF-B241-CFAAE4B7AE93</bpmn2:incoming>
+         <bpmn2:outgoing>_4EB288EA-3135-4B97-BB46-E77159F78832</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      
+      
+      <bpmn2:endEvent id="_95885F94-555D-485A-BB86-5E835B9C3389" name="End Event 2">
+         <bpmn2:incoming>_BF17E37C-6984-4F27-9B6A-A9880E95B019</bpmn2:incoming>
+      </bpmn2:endEvent>
+      
+      <bpmn2:exclusiveGateway id="_13BAF867-3CA8-4C6F-85C6-D3FD748D07D2" name="User found?" gatewayDirection="Diverging" condition="is user found">
+         <bpmn2:incoming>_52A670E9-9448-4BDA-8589-FC646BC41FC7</bpmn2:incoming>
+         <bpmn2:outgoing>_4EFC11AE-52BB-4EEF-B241-CFAAE4B7AE93</bpmn2:outgoing>
+         <bpmn2:outgoing>_BF17E37C-6984-4F27-9B6A-A9880E95B019</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      
+      <bpmn2:endEvent id="_FD4D7A19-558E-4347-8CFE-376792FEDA57" name="Done">
+         <bpmn2:incoming>_4EB288EA-3135-4B97-BB46-E77159F78832</bpmn2:incoming>
+      </bpmn2:endEvent>
+   </bpmn2:process>
+
+</bpmn2:definitions>

@@ -1,0 +1,5 @@
+{
+  "code": "\npublic class PositiveNegative {\n\n    public static void main(String[] args) {\n\n        double number = 12.3;\n\n        // true if number is less than 0\n        if (number < 0.0)\n            System.out.println(number + \" is a negative number.\");\n\n        // true if number is greater than 0\n        else if ( number > 0.0)\n            System.out.println(number + \" is a positive number.\");\n\n        // if both test expression is evaluated to false\n        else\n    }\n}\n",
+  "line": 17,
+  "cursor": 13
+}
