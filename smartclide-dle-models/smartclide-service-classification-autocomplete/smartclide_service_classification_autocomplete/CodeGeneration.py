@@ -25,6 +25,8 @@ class CodeGenerationModel(AIPipelineConfiguration):
     X = []
     y = []
     seedText = ''
+    generatorModel=None
+    TrainedModel='gpt2'
     tokenizer = None
     EncodedCodes = [];
     nGramcodeList = []
@@ -244,6 +246,62 @@ class CodeGenerationModel(AIPipelineConfiguration):
             generatedCodesequences.append(total_sequence)
 
         return generatedCodesequences
+    
+    def getCurrentDirectory(self):
+        import os
+        path = os.getcwd()
+        return(path)
+    
+    def getParentDirectory(self):
+        import os
+        path = os.getcwd()
+        return(os.path.abspath(os.path.join(path, os.pardir)))
+    
+    def getTrainedModelsDirectory(self):
+        import os
+        from smartclide_service_classification_autocomplete import getPackagePath
+        packageRootPath = getPackagePath()
+        return (packageRootPath+"/trained_models/CodeGeneration/")
+    
+
+    def getTrainedModel(self,modelName):
+        import os
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        path=TrainrdModelPath+'/'+modelName
+        return path
+
+    def IsTrainedModelExist(self,modelName):
+        import os
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        isfile = os.path.exists(TrainrdModelPath+'/'+modelName)
+        return isfile
+    
+    def loadGenerator(self):
+        import os
+        import pickle
+        from transformers import pipeline
+        if (self.IsTrainedModelExist('GPTgenerator.pkl')):
+            file = open(self.getTrainedModel('GPTgenerator.pkl'), 'rb')
+            self.generatorModel = pickle.load(file)
+            file.close()
+        else:
+            self.generatorModel = pipeline('text-generation', model=self.TrainedModel)
+#             print("=========================")
+#             print(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"))
+#             from smartclide_service_classification_autocomplete import getPackagePath
+#             print(getPackagePath())
+#             print("=========================")
+            pickle.dump(self.generatorModel,open(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"), 'wb'))  
+            
+        return (self.generatorModel)
+    
+    
+    
+    def GenerateCode(self,codeInput,maxLength):
+        if (self.generatorModel != None) :
+                generated_code_arr = self.generatorModel(codeInput, max_length=maxLength, do_sample=True, temperature=0.9) 
+                generatedCode=generated_code_arr[0]['generated_text']
+                return(generatedCode)
 
 
 

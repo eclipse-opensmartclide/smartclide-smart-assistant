@@ -7,10 +7,16 @@ from .CodeGeneration import *
 from flask import jsonify
 
 class AutocompleteCodeModel():
-     def generateCode(self, codeInput, codeSuggLen, codeSuggLines, method="Default",language="java"):
+     def generateCode(self, codeInput, codeSuggLen, codeSuggLines=1, method="Default",language="java"):
          error=''
          generated_code_arr = []
          if len(codeInput) > 2:
+             if method == 'GPT':
+                 codeGenObj = CodeGenerationModel(True)
+                 codeGenObj.loadGenerator()
+                 generated_code_arr = codeGenObj.GenerateCode(codeInput,codeSuggLen)
+                 if not generated_code_arr:
+                     error = 'Training need more resource'
              if method == 'GPT2':
                  codeGenObj = CodeGenerationModel(True)
                  generated_code_arr = codeGenObj.generateCodeByGPT2(codeInput, int(codeSuggLines), int(codeSuggLen))
@@ -26,8 +32,7 @@ class AutocompleteCodeModel():
                  }
              else:
                  result = {
-                     "code_sugg1": generated_code_arr[0],
-                     "code_sugg2": generated_code_arr[1],
+                     "code_sugg1": generated_code_arr,
                      "Method": method,
                      "language": language
                  }

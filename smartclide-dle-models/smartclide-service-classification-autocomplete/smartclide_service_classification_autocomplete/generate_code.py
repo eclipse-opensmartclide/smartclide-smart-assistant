@@ -1,10 +1,10 @@
 from smartclide_service_classification_autocomplete.AutocompleteCode import AutocompleteCodeModel
 
-codeInput="import java.util.Arrays"
-codeSuggLen=2
-codeSuggLines=2
+codeInput="import java."
+codeSuggLen=6
+codeSuggLines=1
 # method="GPT2"
-method="Default"
+method="GPT"
 genCodeObj = AutocompleteCodeModel()
 pred = genCodeObj.generateCode(codeInput,codeSuggLen,codeSuggLines,method)
 print(pred)
