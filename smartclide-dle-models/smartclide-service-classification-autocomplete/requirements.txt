@@ -10,8 +10,8 @@ wordcloud
 sentence-transformers
 tensorflow
 torch
-ktrain
 flask
+
 
 
 

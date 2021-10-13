@@ -9,10 +9,9 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.tokenize import WhitespaceTokenizer
 from nltk import sent_tokenize, word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('stopwords')
 
+
+    
 
 class TextDataPreProcess:
 
@@ -29,15 +28,17 @@ class TextDataPreProcess:
         return cleaned
 
     def removeStopWords(self, sentence):
+        #nltk.download('stopwords')
         from nltk.corpus import stopwords
         global re_stop_words
-
         stop_words = set(stopwords.words('english'))
         stop_words.update(['monthly', "google", "api", "apis", 'json','Json',"service", "data", "REST", "RESTFUL", "website", "site"])
         re_stop_words = re.compile(r"\b(" + "|".join(stop_words) + ")\\W", re.I)
         return re_stop_words.sub(" ", sentence)
 
     def wordLemmatizer(self, sentence):
+        #nltk.download('punkt')
+        #nltk.download('wordnet')
         from nltk.stem.wordnet import WordNetLemmatizer
 
         lemmatizer = WordNetLemmatizer()

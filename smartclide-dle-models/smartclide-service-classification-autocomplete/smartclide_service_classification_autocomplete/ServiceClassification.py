@@ -32,10 +32,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 
 
-# nltk.download('punkt')
-# nltk.download('wordnet')
-# nltk.download('stopwords')
-
 class ServiceClassificationModel(AIPipelineConfiguration):
     X = []
     y = []
@@ -44,16 +40,19 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     predictor = None
     lbMapped = None
     rawCodeList = [];
+    method =[ 'Default' ,'BSVM']
     df = pd.DataFrame();
     tfidf = TfidfVectorizer()
 
-    def __init__(self, useSavedModel=True, defaultDatasetName='', targetCLMName='Description', classCLMName='Category'):
+    def __init__(self, useSavedModel=True, targetCLMName='Description', classCLMName='Category', defaultDatasetName=''):
         self.targetCLMName = targetCLMName
         self.classCLMName = classCLMName
         self.useSavedModel = useSavedModel
         self.defaultDatasetName = defaultDatasetName
         if (defaultDatasetName == ''):
             self.defaultDatasetName = self.defaultServiceTrainDataset
+        if not (self.useSavedModel):
+            self.loadData()
 
     def loadData(self, path=''):
         if (path == ''):
@@ -109,7 +108,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     def removeCommonWords(self, clmName, n=50):
         commonwords = self.getCommonWord(clmName, n)
         pat = r'\b(?:{})\b'.format('|'.join(commonwords))
-        self.df[clmName] = self.df[clmName].str.replace(pat, '')
+        self.df[clmName] = self.df[clmName].str.replace(pat, '', regex=True)
 
     def preprocessServicesData(self, clmName, actions=[]):
         if ("lower" in actions):
@@ -128,15 +127,17 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         self.df[clmName] = self.df[clmName].str.lower()
 
     def loadSavedModel(self, modelName):
+        path = os.path.abspath(os.path.dirname(__file__))
+        print(path)
+        path2=path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Model_CLFLinearSVC.pk'
+        print(path2)
         if modelName == 'BOWML':
             isfile = os.path.exists(
-                os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BOWML/',
+                os.path.join(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/',
                              'Model_CLFLinearSVC.pk'))
             if isfile:
-                self.model = pickle.load(
-                    open(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BOWML/Model_CLFLinearSVC.pk', 'rb'))
-                self.tfidf = pickle.load(
-                    open(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BOWML/Vector_tfidf.pkl', 'rb'))
+                self.model = pickle.load(open(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Model_CLFLinearSVC.pk', 'rb'))
+                self.tfidf = pickle.load(open(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Vector_tfidf.pkl','rb'))
                 return True
             return False
         elif modelName == 'BSVM':
@@ -147,21 +148,10 @@ class ServiceClassificationModel(AIPipelineConfiguration):
                     open(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BSVM/Model_SVC.pk', 'rb'))
                 return True
             return False
-        elif modelName == 'FastText':
-            import ktrain
-            from ktrain import text
-            self.predictor = ktrain.load_predictor(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_FastText/')
-            print("FastText")
-            print(self.predictor)
-            return False
         else:
             return False
         return False
 
-    def provideMLModelInput(self):
-        self.tfidf = TfidfVectorizer()
-        self.X = self.tfidf.fit_transform(self.df[self.targetCLMName])
-        self.y = self.df['category']
 
     def TrainLinerSVCModel(self):
         self.preprocessServicesData(self.targetCLMName)
@@ -171,8 +161,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         self.y = self.df[self.classCLMName]
         self.model = LinearSVC(class_weight='balanced', random_state=777)
         self.model.fit(self.X, self.y)
+        print(self.classCLMName)
         # save models
-        # for entry in os.scandir('.'):
         here = os.path.abspath(os.path.dirname(__file__))
         pickle.dump(self.model,
                     open(os.path.join(here + "/trained_models/Model_BOWML/", "Model_CLFLinearSVC.pk"), 'wb'))
@@ -185,89 +175,22 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         x = textPreProcessOBJ.cleanPunc(x)
         if (len(x) < 2):
             return False
-        isfile = os.path.exists(
-            os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BOWML/',
-                         'Model_CLFLinearSVC.pk'))
+        here = os.path.abspath(os.path.dirname(__file__))
+        isfile = os.path.exists(os.path.join(here + self.defaultTrainedModelPath + 'Model_BOWML/','Model_CLFLinearSVC.pk'))
+        print("00000000000000000000000000000000000000")
+        print(isfile)
+        print(os.path.join(here + self.defaultTrainedModelPath + 'Model_BOWML/','Model_CLFLinearSVC.pk'))
         # load saved model
         if self.useSavedModel == True and isfile:
             self.loadSavedModel("BOWML")
         else:
+            self.loadData()
             self.TrainLinerSVCModel()
         x = self.tfidf.transform([x])
         x = x.toarray()
         pred = self.model.predict(x)
-        pred = self.df[self.df['Category'] == pred[0]].head(1)['Category_lable'].values[0]
         return pred
 
-    def TrainFasttextModel(self):
-        import ktrain
-        from ktrain import text
-        df = self.preprocessServicesData(self.targetCLMName)
-        df.to_csv('clustered_datatrain_preprocessed_bert.csv')
-        PATH = "clustered_datatrain_preprocessed_bert.csv"
-        NUM_WORDS = 1000000
-        MAXLEN = 700
-        df = self.preprocessServicesData(self.targetCLMName)
-        train, val, preproc = text.texts_from_csv(PATH, 'Description', label_columns='Category',
-                                                  ngram_range=1, max_features=NUM_WORDS, maxlen=MAXLEN)
-        model = text.text_classifier('fasttext', train, preproc)
-        self.learner = ktrain.get_learner(model, train, val)
-        self.learner.autofit(0.01, self.epoch)
-        self.predictor = ktrain.get_predictor(self.learner.model, preproc)
-        self.predictor.save(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_FastText/')
-        self.learner.validate(class_names=predictor.get_classes())  # class_names must be string values
-        return
-
-    def predictFastTextModel(self, x):
-        textPreProcessOBJ = TextDataPreProcess()
-        x = x.lower()
-        x = textPreProcessOBJ.removeStopWords(x)
-        x = textPreProcessOBJ.cleanPunc(x)
-        if (len(x) < 2):
-            return False
-        isfile = os.path.exists(
-            os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_FastText/', 'tf_model.h5'))
-        if self.useSavedModel == True and isfile:
-            self.loadSavedModel("FastText")
-        else:
-            self.TrainFasttextModel()
-        pred = self.predictor.predict([x])
-        return pred
-
-    def TrainFasttextModel(self):
-        import ktrain
-        from ktrain import text
-        df = self.preprocessServicesData(self.targetCLMName)
-        df.to_csv('clustered_datatrain_preprocessed_bert.csv')
-        PATH = "clustered_datatrain_preprocessed_bert.csv"
-        NUM_WORDS = 1000000
-        MAXLEN = 700
-        df = self.preprocessServicesData(self.targetCLMName)
-        train, val, preproc = text.texts_from_csv(PATH, 'Description', label_columns='Category',
-                                                  ngram_range=1, max_features=NUM_WORDS, maxlen=MAXLEN)
-        model = text.text_classifier('fasttext', train, preproc)
-        self.learner = ktrain.get_learner(model, train, val)
-        self.learner.autofit(0.01, self.epoch)
-        self.predictor = ktrain.get_predictor(self.learner.model, preproc)
-        self.predictor.save(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_FastText/')
-        self.learner.validate(class_names=predictor.get_classes())  # class_names must be string values
-        return
-
-    def predictFastTextModel(self, x):
-        textPreProcessOBJ = TextDataPreProcess()
-        x = x.lower()
-        x = textPreProcessOBJ.removeStopWords(x)
-        x = textPreProcessOBJ.cleanPunc(x)
-        if (len(x) < 2):
-            return False
-        isfile = os.path.exists(
-            os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_FastText/', 'tf_model.h5'))
-        if self.useSavedModel == True and isfile:
-            self.loadSavedModel("FastText")
-        else:
-            self.TrainFasttextModel()
-        pred = self.predictor.predict([x])
-        return pred
 
     def VectorizeDataset(self, maxLen=60):
         import transformers as ppb
@@ -333,11 +256,4 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         else:
             self.ContextualEmbedingTrain()
         pred = self.model.predict(features)
-        return self.df[self.df['Category'] == pred[0]]['Category_lable'].head(1)
-        #         encoder = LabelEncoder()
-        #         encoder.classes_ = np.load(_PATH_ROOT_ + self.defaultTrainedModelPath+'Model_BSVM/classes.npy', allow_pickle=True)
-        #         pred_label=encoder.inverse_transform(pred)
-        # for list
-        # list(le.inverse_transform([2, 2, 1]))
-
         return pred
