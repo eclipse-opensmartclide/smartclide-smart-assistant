@@ -15,6 +15,6 @@ method="Default"
 
 serviceObj = PredictServiceClassModel()
 serviceDesc=X6
-pred = serviceObj.predict(serviceName,serviceDesc,method="Default")
+pred = serviceObj.predict(serviceName,serviceDesc,method="BSVM")
 print(pred)
 

@@ -39,6 +39,14 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     learner = None
     predictor = None
     lbMapped = None
+    testDF=None
+    trainDF=None
+    tokenizer=None
+    testLabels=None
+    trainLabels=None
+    testFeatures=None
+    trainFeatures=None
+    maxLenEmbedding=60
     rawCodeList = [];
     method =[ 'Default' ,'BSVM']
     df = pd.DataFrame();
@@ -56,10 +64,42 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def loadData(self, path=''):
         if (path == ''):
+            currentPath=self.getCurrentDirectory()
+            self.df = pd.read_csv(os.path.join(currentPath, "train_dataset_top_cat.csv"))
+            self.testDF =  pd.read_csv(os.path.join(currentPath, "test_dataset_top_cat.csv"))
+            self.trainDF =  pd.read_csv(os.path.join(currentPath, "train_dataset_top_cat.csv"))
+        else:
             here = os.path.abspath(os.path.dirname(__file__))
-        self.df = pd.read_csv(os.path.join(here, "services_processed_mapped.csv"))
-        return (self.df)
+            self.df = pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))
+            self.testDF =  pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))
+            self.trainDF =  pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))   
+            
+        return self.df  
+    
+    def getCurrentDirectory(self):
+        path = os.getcwd()
+        return(path)
+    
+    def getParentDirectory(self):
+        path = os.getcwd()
+        return(os.path.abspath(os.path.join(path, os.pardir)))
+    
+    def getTrainedModelsDirectory(self):
+        from smartclide_service_classification_autocomplete import getPackagePath
+        packageRootPath = getPackagePath()
+        #packageRootPath = os.getcwd()
+        return (packageRootPath+"/trained_models/")
+    def getTrainedModel(self,modelName):
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        path=TrainrdModelPath+'/'+modelName
+        return path
 
+    def IsTrainedModelExist(self,modelName):
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        isfile = os.path.exists(TrainrdModelPath+'/'+modelName)
+        return isfile       
+    
+    
     def removeHTMLTags(self, clmName):
         textPreProcessOBJ = TextDataPreProcess()
         self.df[clmName] = self.df[clmName].astype(str).apply(textPreProcessOBJ.removeHTMLTags)
@@ -125,33 +165,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def lowercase(self, clmName):
         self.df[clmName] = self.df[clmName].str.lower()
-
-    def loadSavedModel(self, modelName):
-        path = os.path.abspath(os.path.dirname(__file__))
-        print(path)
-        path2=path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Model_CLFLinearSVC.pk'
-        print(path2)
-        if modelName == 'BOWML':
-            isfile = os.path.exists(
-                os.path.join(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/',
-                             'Model_CLFLinearSVC.pk'))
-            if isfile:
-                self.model = pickle.load(open(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Model_CLFLinearSVC.pk', 'rb'))
-                self.tfidf = pickle.load(open(path +'/'+ self.defaultTrainedModelPath + 'Model_BOWML/Vector_tfidf.pkl','rb'))
-                return True
-            return False
-        elif modelName == 'BSVM':
-            isfile = os.path.exists(
-                os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BSVM/', 'Model_SVC.pk'))
-            if isfile:
-                self.model = pickle.load(
-                    open(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BSVM/Model_SVC.pk', 'rb'))
-                return True
-            return False
-        else:
-            return False
-        return False
-
+        
 
     def TrainLinerSVCModel(self):
         self.preprocessServicesData(self.targetCLMName)
@@ -164,9 +178,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         print(self.classCLMName)
         # save models
         here = os.path.abspath(os.path.dirname(__file__))
-        pickle.dump(self.model,
-                    open(os.path.join(here + "/trained_models/Model_BOWML/", "Model_CLFLinearSVC.pk"), 'wb'))
-        pickle.dump(self.tfidf, open(os.path.join(here + "/trained_models/Model_BOWML/", 'Vector_tfidf.pkl'), 'wb'))
+        pickle.dump(self.model,open(os.path.join(here + "/trained_models/", "service_classification_bow_svc.pkl"), 'wb'))
+        pickle.dump(self.tfidf, open(os.path.join(here + "/trained_models/", 'service_classification_vector_tfidf.pkl'), 'wb'))
 
     def predictBOWML(self, x):
         textPreProcessOBJ = TextDataPreProcess()
@@ -175,17 +188,16 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         x = textPreProcessOBJ.cleanPunc(x)
         if (len(x) < 2):
             return False
-        here = os.path.abspath(os.path.dirname(__file__))
-        isfile = os.path.exists(os.path.join(here + self.defaultTrainedModelPath + 'Model_BOWML/','Model_CLFLinearSVC.pk'))
-        print("00000000000000000000000000000000000000")
-        print(isfile)
-        print(os.path.join(here + self.defaultTrainedModelPath + 'Model_BOWML/','Model_CLFLinearSVC.pk'))
-        # load saved model
-        if self.useSavedModel == True and isfile:
-            self.loadSavedModel("BOWML")
+        
+        if (self.IsTrainedModelExist( 'service_classification_bow_svc.pkl')):
+            try:
+                self.loadSavedModel("BOWML")
+            except ValueError:
+                print("Could not load model.")
         else:
             self.loadData()
-            self.TrainLinerSVCModel()
+            self.TrainLinerSVCModel()            
+            
         x = self.tfidf.transform([x])
         x = x.toarray()
         pred = self.model.predict(x)
@@ -204,56 +216,134 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         padded = np.array([i + [0] * (maxLen - len(i)) for i in tokenized.values])
         input_ids = torch.tensor(padded)
         return input_ids
+    
+    def getCurrentDirectory(self):
+        path = os.getcwd()
+        return(path)
+    
+    def getParentDirectory(self):
+        path = os.getcwd()
+        return(os.path.abspath(os.path.join(path, os.pardir)))
+    
+    def getTrainedModelsDirectory(self):
+        from smartclide_service_classification_autocomplete import getPackagePath
+        packageRootPath = getPackagePath()
+        return (packageRootPath+"/trained_models/")
+    
 
-    def ContextualEmbedingTrain(self, maxLen=60):
-        import transformers as ppb
-        from sklearn.model_selection import train_test_split
-        model_class, tokenizer_class, pretrained_weights = (
-            ppb.DistilBertModel, ppb.DistilBertTokenizer, 'distilbert-base-uncased')
-        tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
-        model = model_class.from_pretrained(pretrained_weights)
+    def getTrainedModel(self,modelName):
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        path=TrainrdModelPath+'/'+modelName
+        return path
 
-        input_ids = self.VectorizeDataset(maxLen)
-        with torch.no_grad():
-            last_hidden_states = model(input_ids)
-        features = last_hidden_states[0][:, 0, :].numpy()
-        labels = self.df[self.classCLMName]
-        train_features, test_features, train_labels, test_labels = train_test_split(features, labels)
+    def IsTrainedModelExist(self,modelName):
+        TrainrdModelPath = self.getTrainedModelsDirectory()
+        isfile = os.path.exists(TrainrdModelPath+'/'+modelName)
+        return isfile
+
+    def ContextualEmbedingTrain(self,maxLen=20):
+        self.loadData()
+        y_train = self.trainDF["Category_lable"].values
+        y_test = self.testDF["Category_lable"].values
+        trainFeatures=self.getX_featuers(self.trainDF)
+        trainLabels =y_train
+        trainFeatures=self.getX_featuers(self.testDF)
+        trainLabels =y_test 
         from sklearn.svm import LinearSVC
         self.model = LinearSVC(class_weight='balanced', random_state=777)
-        self.model.fit(train_features, train_labels)
-        pickle.dump(self.model, open(_PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BSVM/Model_SVC.pk', 'wb'))
-
-    def predictBSVMModel(self, x, maxLen=60):
+        self.model.fit(trainFeatures, trainLabels)
+        from sklearn.svm import LinearSVC
+        self.model = LinearSVC(class_weight='balanced', random_state=777)
+        self.model.fit(trainFeatures, trainLabels)
+        path=self.getTrainedModelsDirectory()   
+        try:
+            import pickle
+            here = os.path.abspath(os.path.dirname(__file__))
+            pickle.dump(self.model,
+                        open(os.path.join(here + "/trained_models/", "service_classification_bert_svc.pkl"), 'wb'))
+        except OSError as err:
+            print("OS error: {0}".format(err))
+        except ValueError:
+            print("Could not dump model.")
+        except BaseException as err:
+            print(f"Unexpected {err=}, {type(err)=}")  
+    
+    def getX_featuers(self,df):
         import torch
+        from transformers import DistilBertForSequenceClassification, DistilBertTokenizer, DistilBertConfig , DistilBertModel
         import transformers as ppb
-        model_class, tokenizer_class, pretrained_weights = (
-            ppb.DistilBertModel, ppb.DistilBertTokenizer, 'distilbert-base-uncased')
-        tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
-        textPreProcessOBJ = TextDataPreProcess()
-        x = x.lower()
-        x = textPreProcessOBJ.removeStopWords(x)
-        x = textPreProcessOBJ.cleanPunc(x)
+        dftemp = pd.DataFrame()
+        dftemp['Description']=df['Description']
+        # For DistilBERT:
+        model_class, tokenizer_class, pretrained_weights = (ppb.DistilBertModel, ppb.DistilBertTokenizer, 'distilbert-base-uncased')
+        # Load pretrained model/tokenizer
+        self.tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
+        model = model_class.from_pretrained(pretrained_weights)
+        tokenized = dftemp['Description'].apply((lambda x: self.tokenizer.encode(x,  max_length=self.maxLenEmbedding,add_special_tokens=True,truncation=True)))
+        max_len = 0
+        for i in tokenized.values:
+            if len(i) > max_len:
+                max_len = len(i)
+        padded = np.array([i + [0]*(self.maxLenEmbedding-len(i)) for i in tokenized.values])
+        attention_mask = np.where(padded != 0, 1, 0)
+        attention_mask.shape
+        input_ids = torch.tensor(padded)  
+        attention_mask = torch.tensor(attention_mask)
+        with torch.no_grad():
+            last_hidden_states = model(input_ids)
+        features = last_hidden_states[0][:,0,:].numpy()
+        return features
+
+    def predictBSVMModel(self, x):
+        import torch
+        from transformers import DistilBertForSequenceClassification, DistilBertTokenizer, DistilBertConfig , DistilBertModel
+        import transformers as ppb
         if (len(x) < 2):
             return False
-        df_input = pd.DataFrame(columns=[self.targetCLMName])
+        df_input = pd.DataFrame();
+        df_input['Description']=""
+        df_input = pd.DataFrame(columns=['Description'])
         df_input.loc[0] = [x]
-        tokenized = df_input['Description'].apply(
-            (lambda x: tokenizer.encode(x, maxLength=60, add_special_tokens=True)))
-        padded = np.array([i + [0] * (maxLen - len(i)) for i in tokenized.values])
-        # Load pretrained model/tokenizer
-        tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
-        model = model_class.from_pretrained(pretrained_weights)
-        input_x_ids = torch.tensor(padded)
+        if self.tokenizer==None:
+            model_class, tokenizer_class, pretrained_weights = (ppb.DistilBertModel, 
+                                                                ppb.DistilBertTokenizer,
+                                                                'distilbert-base-uncased')
+            tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
+            model = model_class.from_pretrained(pretrained_weights)
+
+        tokenized = df_input['Description'].apply((lambda x: tokenizer.encode(x,  max_length=self.maxLenEmbedding,add_special_tokens=True)))
+        padded = np.array([i + [0]*(self.maxLenEmbedding-len(i)) for i in tokenized.values])
+        input_x_ids = torch.tensor(padded) 
         with torch.no_grad():
             last_hidden_states = model(input_x_ids)
-        features = last_hidden_states[0][:, 0, :].numpy()
-        isfile = os.path.exists(
-            os.path.join(os.getcwd(), _PATH_ROOT_ + self.defaultTrainedModelPath + 'Model_BSVM/', 'Model_SVC.pk'))
-        # load saved model
-        if self.useSavedModel == True and isfile:
-            self.loadSavedModel("BSVM")
+        features = last_hidden_states[0][:,0,:].numpy()
+        
+        if (self.IsTrainedModelExist( 'service_classification_bert_svc.pkl')):
+            try:
+                self.loadSavedModel("BSVM")
+            except ValueError:
+                print("Could not load model.")
         else:
             self.ContextualEmbedingTrain()
         pred = self.model.predict(features)
-        return pred
+        return pred        
+
+    
+    def loadSavedModel(self, modelName):
+        path=self.getTrainedModelsDirectory()   
+        if modelName == 'BOWML':
+            isfile = os.path.exists(os.path.join(path,'service_classification_bow_svc.pkl'))
+            if isfile:
+                self.model = pickle.load(open(path + 'service_classification_bow_svc.pkl', 'rb'))
+                self.tfidf = pickle.load(open(path + 'service_classification_vector_tfidf.pkl','rb'))
+                return True
+            return False
+        elif modelName == 'BSVM':
+            isfile = os.path.exists(os.path.join(path, 'service_classification_bert_svc.pkl'))
+            if isfile:
+                self.model = pickle.load(open(path + 'service_classification_bert_svc.pkl', 'rb'))
+                return True
+            return False
+        else:
+            return False
+        return False
