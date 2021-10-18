@@ -7,10 +7,11 @@ from .ServiceClassification import *
 from flask import jsonify
 
 class PredictServiceClassModel():
-     def predict(self,serviceName,serviceDesc,method="Default"):
+     def predict(self,serviceName,serviceDesc,serviceID,method="Default"):
             result=None
             errorMsg=None
             serviceClass=''
+            print(ServiceClassificationModel.method)
             if not method in (ServiceClassificationModel.method): 
                      result = {"Error": "The Method is invalid" }
                      return  result
@@ -38,6 +39,7 @@ class PredictServiceClassModel():
                         result = {
                          "service_name": serviceName,
                          "Method": method,
+                         "service_id":serviceID,
                          "Service_class": serviceClass
                        }
                     results.append(result)

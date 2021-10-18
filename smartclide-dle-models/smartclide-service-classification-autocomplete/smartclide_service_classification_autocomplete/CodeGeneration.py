@@ -153,14 +153,14 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.modelLSTM.compile(loss='categorical_crossentropy', optimizer='adam', metrics=["accuracy"])
         self.modelLSTM.fit(self.X, self.y, batch_size=self.batchSize, epochs=self.epochs)
         here = os.path.abspath(os.path.dirname(__file__))
-        self.modelLSTM.save(os.path.join(here + "/trained_models/CodeGeneration/", 'LSTM_code_generation_model') )
+        self.modelLSTM.save(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model') )
 
     def loadSavedModel(self):
         import os
         here = os.path.abspath(os.path.dirname(__file__))
-        isfile = os.path.exists(os.path.join(here + "/trained_models/CodeGeneration/LSTM_code_generation_model/", 'saved_model.pb'))
+        isfile = os.path.exists(os.path.join(here + "/trained_models/LSTM_code_generation_model/", 'saved_model.pb'))
         if isfile:
-            self.modelLSTM = tensorflow.keras.models.load_model(os.path.join(here + "/trained_models/CodeGeneration/", 'LSTM_code_generation_model'))
+            self.modelLSTM = tensorflow.keras.models.load_model(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
             return True
         return False
 
@@ -261,7 +261,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
         import os
         from smartclide_service_classification_autocomplete import getPackagePath
         packageRootPath = getPackagePath()
-        return (packageRootPath+"/trained_models/CodeGeneration/")
+        return (packageRootPath+"/trained_models/")
     
 
     def getTrainedModel(self,modelName):
@@ -286,11 +286,6 @@ class CodeGenerationModel(AIPipelineConfiguration):
             file.close()
         else:
             self.generatorModel = pipeline('text-generation', model=self.TrainedModel)
-#             print("=========================")
-#             print(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"))
-#             from smartclide_service_classification_autocomplete import getPackagePath
-#             print(getPackagePath())
-#             print("=========================")
             pickle.dump(self.generatorModel,open(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"), 'wb'))  
             
         return (self.generatorModel)
