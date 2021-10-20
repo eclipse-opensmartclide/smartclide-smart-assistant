@@ -12,9 +12,10 @@ X6="Tipalti removes the friction of financial operations, utils invoices, and re
 serviceName='test'
 serviceDesc=''
 method="Default"
+serviceID=11
 
 serviceObj = PredictServiceClassModel()
 serviceDesc=X6
-pred = serviceObj.predict(serviceName,serviceDesc,method="BSVM")
+pred = serviceObj.predict(serviceName,serviceDesc,serviceID,method="BSVM")
 print(pred)
 

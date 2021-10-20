@@ -18,6 +18,7 @@ class PredictServiceClassModel():
             if len(serviceDesc) > 2:
                     if method == 'BSVM':
                         serviceObjBSVM = ServiceClassificationModel(True)
+                        print('yessss')
                         pred = serviceObjBSVM.predictBSVMModel(serviceDesc)
                         if len(pred[0]) < 1:
                             errorMsg = 'Training need more resource'

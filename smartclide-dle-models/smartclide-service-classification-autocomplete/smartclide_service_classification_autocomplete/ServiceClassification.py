@@ -52,28 +52,33 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     df = pd.DataFrame();
     tfidf = TfidfVectorizer()
 
-    def __init__(self, useSavedModel=True, targetCLMName='Description', classCLMName='Category', defaultDatasetName=''):
+
+    def __init__(self, useSavedModel=True,
+                 targetCLMName='Description', 
+                 classCLMName='Category',
+                 defaultServiceDataset='',
+                 defaultServiceTrainDataset='',
+                 defaultServiceTestDataset=''
+                ):
         self.targetCLMName = targetCLMName
         self.classCLMName = classCLMName
         self.useSavedModel = useSavedModel
-        self.defaultDatasetName = defaultDatasetName
-        if (defaultDatasetName == ''):
-            self.defaultDatasetName = self.defaultServiceTrainDataset
+        if not (defaultServiceTrainDataset == ''):
+            self.defaultServiceTrainDataset = defaultServiceTrainDataset
+        if not (defaultServiceTestDataset == ''):
+            self.defaultServiceTestDataset = defaultServiceTestDataset
+        if (defaultServiceDataset == ''):
+            self.defaultServiceDataset = self.defaultServiceDataset
         if not (self.useSavedModel):
             self.loadData()
 
     def loadData(self, path=''):
         if (path == ''):
             currentPath=self.getCurrentDirectory()
-            self.df = pd.read_csv(os.path.join(currentPath, "train_dataset_top_cat.csv"))
-            self.testDF =  pd.read_csv(os.path.join(currentPath, "test_dataset_top_cat.csv"))
-            self.trainDF =  pd.read_csv(os.path.join(currentPath, "train_dataset_top_cat.csv"))
-        else:
-            here = os.path.abspath(os.path.dirname(__file__))
-            self.df = pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))
-            self.testDF =  pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))
-            self.trainDF =  pd.read_csv(os.path.join(path, "train_dataset_top_cat.csv"))   
-            
+            self.df = pd.read_csv(os.path.join(currentPath, self.defaultServiceDataset))
+            self.trainDF =  pd.read_csv(os.path.join(currentPath, self.defaultServiceTrainDataset))
+            self.testDF =  pd.read_csv(os.path.join(currentPath,self.defaultServiceTestDataset)) 
+        self.df  = self.df.loc[:, ~self.df.columns.str.contains('^Unnamed')]    
         return self.df  
     
     def getCurrentDirectory(self):
@@ -247,8 +252,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         y_test = self.testDF["Category_lable"].values
         trainFeatures=self.getX_featuers(self.trainDF)
         trainLabels =y_train
-        trainFeatures=self.getX_featuers(self.testDF)
-        trainLabels =y_test 
+#         testFeatures=self.getX_featuers(self.testDF)
+#         testLabels =y_test 
         from sklearn.svm import LinearSVC
         self.model = LinearSVC(class_weight='balanced', random_state=777)
         self.model.fit(trainFeatures, trainLabels)

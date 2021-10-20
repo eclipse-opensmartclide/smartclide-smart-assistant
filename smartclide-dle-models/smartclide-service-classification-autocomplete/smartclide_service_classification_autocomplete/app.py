@@ -42,7 +42,7 @@ def data():
         serviceDesc = json_data["service_desc"]
     if len(serviceDesc) > 2:
         serviceObj = PredictServiceClassModel()
-        results = serviceObj.predict(serviceName,serviceDesc,serviceID)
+        results = serviceObj.predict(serviceName,serviceDesc,serviceID,method)
         return results
 
 
