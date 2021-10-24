@@ -32,7 +32,7 @@ class TextDataPreProcess:
         from nltk.corpus import stopwords
         global re_stop_words
         stop_words = set(stopwords.words('english'))
-        stop_words.update(['monthly', "google", "api", "apis", 'json','Json',"service", "data", "REST", "RESTFUL", "website", "site"])
+        stop_words.update(['monthly', "google", "api", "apis", 'json','Json',"service", "provide","including", "data", "REST", "RESTFUL", "website", "site"])
         re_stop_words = re.compile(r"\b(" + "|".join(stop_words) + ")\\W", re.I)
         return re_stop_words.sub(" ", sentence)
 
@@ -55,7 +55,7 @@ class TextDataPreProcess:
         return wordsFreq[:n]
 
     def getCommonWords(self, count_data, countVectorizerOBJ, n):
-        words = countVectorizerOBJ.get_feature_names()
+        words = countVectorizerOBJ.get_feature_names_out()
         total_counts = np.zeros(len(words))
         for t in count_data:
             total_counts += t.toarray()[0]

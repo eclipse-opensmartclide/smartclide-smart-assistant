@@ -174,17 +174,21 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def TrainLinerSVCModel(self):
         self.preprocessServicesData(self.targetCLMName)
-        self.tfidf = TfidfVectorizer()
-        d = self.df[self.targetCLMName]
-        self.X = self.tfidf.fit_transform(d)
-        self.y = self.df[self.classCLMName]
-        self.model = LinearSVC(class_weight='balanced', random_state=777)
+        self.X=self.trainDF[self.targetCLMName]
+        self.y=self.trainDF[self.classCLMName]
+        from sklearn.pipeline import Pipeline
+        from sklearn.feature_extraction.text import CountVectorizer
+        from sklearn.feature_extraction.text import TfidfTransformer
+        self.model = Pipeline([('vect', CountVectorizer()),
+                       ('tfidf', TfidfTransformer()),
+                       ('clf', LinearSVC(class_weight='balanced', random_state=777)),
+                      ])
         self.model.fit(self.X, self.y)
-        print(self.classCLMName)
         # save models
-        here = os.path.abspath(os.path.dirname(__file__))
-        pickle.dump(self.model,open(os.path.join(here + "/trained_models/", "service_classification_bow_svc.pkl"), 'wb'))
-        pickle.dump(self.tfidf, open(os.path.join(here + "/trained_models/", 'service_classification_vector_tfidf.pkl'), 'wb'))
+        packagePath = os.path.abspath(os.path.dirname(__file__))
+        pickle.dump(self.model,open(os.path.join(packagePath + "/trained_models/", "service_classification_bow_svc.pkl"), 'wb'))
+        
+        
 
     def predictBOWML(self, x):
         textPreProcessOBJ = TextDataPreProcess()
@@ -203,9 +207,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             self.loadData()
             self.TrainLinerSVCModel()            
             
-        x = self.tfidf.transform([x])
-        x = x.toarray()
-        pred = self.model.predict(x)
+        pred = self.model.predict([x])
         return pred
 
 
@@ -252,20 +254,14 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         y_test = self.testDF["Category_lable"].values
         trainFeatures=self.getX_featuers(self.trainDF)
         trainLabels =y_train
-#         testFeatures=self.getX_featuers(self.testDF)
-#         testLabels =y_test 
         from sklearn.svm import LinearSVC
         self.model = LinearSVC(class_weight='balanced', random_state=777)
         self.model.fit(trainFeatures, trainLabels)
-        from sklearn.svm import LinearSVC
-        self.model = LinearSVC(class_weight='balanced', random_state=777)
-        self.model.fit(trainFeatures, trainLabels)
-        path=self.getTrainedModelsDirectory()   
         try:
             import pickle
-            here = os.path.abspath(os.path.dirname(__file__))
+            packagePath = os.path.abspath(os.path.dirname(__file__))
             pickle.dump(self.model,
-                        open(os.path.join(here + "/trained_models/", "service_classification_bert_svc.pkl"), 'wb'))
+                        open(os.path.join(packagePath + "/trained_models/", "service_classification_bert_svc.pkl"), 'wb'))
         except OSError as err:
             print("OS error: {0}".format(err))
         except ValueError:
@@ -340,7 +336,6 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             isfile = os.path.exists(os.path.join(path,'service_classification_bow_svc.pkl'))
             if isfile:
                 self.model = pickle.load(open(path + 'service_classification_bow_svc.pkl', 'rb'))
-                self.tfidf = pickle.load(open(path + 'service_classification_vector_tfidf.pkl','rb'))
                 return True
             return False
         elif modelName == 'BSVM':

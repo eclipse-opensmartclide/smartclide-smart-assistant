@@ -43,7 +43,7 @@ def data():
     if len(serviceDesc) > 2:
         serviceObj = PredictServiceClassModel()
         results = serviceObj.predict(serviceName,serviceDesc,serviceID,method)
-        return results
+        return jsonify({'result': results})
 
 
 @app.route('/dle/code_autocomplete', methods=['POST', 'GET'])
