@@ -31,7 +31,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # # toknize
 import nltk
 
-
 class ServiceClassificationModel(AIPipelineConfiguration):
     X = []
     y = []
@@ -46,7 +45,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     trainLabels=None
     testFeatures=None
     trainFeatures=None
-    maxLenEmbedding=60
+    maxLenEmbedding=80
     rawCodeList = [];
     method =[ 'Default' ,'BSVM']
     df = pd.DataFrame();
@@ -250,12 +249,13 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def ContextualEmbedingTrain(self,maxLen=20):
         self.loadData()
+        X_train = self.trainDF[self.targetCLMName].values
         y_train = self.trainDF["Category_lable"].values
-        y_test = self.testDF["Category_lable"].values
         trainFeatures=self.getX_featuers(self.trainDF)
         trainLabels =y_train
         from sklearn.svm import LinearSVC
         self.model = LinearSVC(class_weight='balanced', random_state=777)
+        print("modeling")
         self.model.fit(trainFeatures, trainLabels)
         try:
             import pickle
@@ -305,21 +305,21 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         df_input['Description']=""
         df_input = pd.DataFrame(columns=['Description'])
         df_input.loc[0] = [x]
-        if self.tokenizer==None:
-            model_class, tokenizer_class, pretrained_weights = (ppb.DistilBertModel, 
+#         if self.tokenizer==None:
+        model_class, tokenizer_class, pretrained_weights = (ppb.DistilBertModel, 
                                                                 ppb.DistilBertTokenizer,
                                                                 'distilbert-base-uncased')
-            tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
-            model = model_class.from_pretrained(pretrained_weights)
+        self.tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
+        model = model_class.from_pretrained(pretrained_weights)
 
-        tokenized = df_input['Description'].apply((lambda x: tokenizer.encode(x,  max_length=self.maxLenEmbedding,add_special_tokens=True)))
+        tokenized = df_input['Description'].apply((lambda x:  self.tokenizer.encode(x,  max_length=self.maxLenEmbedding,add_special_tokens=True)))
         padded = np.array([i + [0]*(self.maxLenEmbedding-len(i)) for i in tokenized.values])
         input_x_ids = torch.tensor(padded) 
         with torch.no_grad():
             last_hidden_states = model(input_x_ids)
         features = last_hidden_states[0][:,0,:].numpy()
         
-        if (self.IsTrainedModelExist( 'service_classification_bert_svc.pkl')):
+        if (self.useSavedModel and self.IsTrainedModelExist( 'service_classification_bert_svc.pkl')):
             try:
                 self.loadSavedModel("BSVM")
             except ValueError:
@@ -346,4 +346,4 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             return False
         else:
             return False
-        return False
+        return False   
