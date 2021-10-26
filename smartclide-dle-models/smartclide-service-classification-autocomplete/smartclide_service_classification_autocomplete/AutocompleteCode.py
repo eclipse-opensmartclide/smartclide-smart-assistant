@@ -6,37 +6,28 @@
 from .CodeGeneration import *
 from flask import jsonify
 
+
 class AutocompleteCodeModel():
-     def generateCode(self, codeInput, codeSuggLen, codeSuggLines=1, method="Default",language="java"):
-         error=''
-         generated_code_arr = []
-         if len(codeInput) > 2:
-             if method == 'GPT':
-                 codeGenObj = CodeGenerationModel(True)
-                 codeGenObj.loadGenerator()
-                 generated_code_arr = codeGenObj.GenerateCode(codeInput,codeSuggLen)
-                 if not generated_code_arr:
-                     error = 'Training need more resource'
-             if method == 'GPT2':
-                 codeGenObj = CodeGenerationModel(True)
-                 generated_code_arr = codeGenObj.generateCodeByGPT2(codeInput, int(codeSuggLines), int(codeSuggLen))
-                 if not generated_code_arr:
-                     error = 'Training need more resource'
-             if method == 'Default':
-                 codeGenObj = CodeGenerationModel(True)
-                 generated_code_arr = codeGenObj.generate_code(codeInput, int(codeSuggLines))
-             # results = []
-             if not generated_code_arr:
-                 result = {
-                     "Error": error,
-                 }
-             else:
-                 result = {
-                     "code_sugg1": generated_code_arr,
-                     "Method": method,
-                     "language": language
-                 }
 
-             # results.append(result)
-             return ({'result': result})
+    def __init__(self):
+        codeGenObj = CodeGenerationModel(True)
+        self.generator = codeGenObj.loadGenerator()
+        
+    def getCodeGenerator(self):
+        return self.generator
 
+    def generateCode(self, codeInput, codeSuggLen, codeSuggLines=1, method="Default", language="java"):
+        error = ''
+        generated_code_arr = ''
+        if len(codeInput) > 2:
+            if method == 'Default':
+                generated_code_arr = self.generator(codeInput, max_length=codeSuggLen, do_sample=True, temperature=0.9)
+                generatedCode = generated_code_arr[0]['generated_text']
+    
+        result = {
+            "code_sugg1": generatedCode,
+            "Method": method,
+            "language": language
+        }
+    
+        return ({'result': result})
