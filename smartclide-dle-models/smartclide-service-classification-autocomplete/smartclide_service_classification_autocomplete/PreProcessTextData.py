@@ -10,7 +10,9 @@ from nltk.tokenize import WhitespaceTokenizer
 from nltk import sent_tokenize, word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
 
-
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('punkt')
     
 
 class TextDataPreProcess:

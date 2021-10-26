@@ -73,7 +73,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def loadData(self, path=''):
         if (path == ''):
-            currentPath=self.getCurrentDirectory()
+#             currentPath=self.getCurrentDirectory()
+            currentPath = os.path.abspath(os.path.dirname(__file__))
             self.df = pd.read_csv(os.path.join(currentPath, self.defaultServiceDataset))
             self.trainDF =  pd.read_csv(os.path.join(currentPath, self.defaultServiceTrainDataset))
             self.testDF =  pd.read_csv(os.path.join(currentPath,self.defaultServiceTestDataset)) 
