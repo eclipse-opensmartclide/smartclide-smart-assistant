@@ -5,47 +5,78 @@ from .AIPipelineConfiguration import  *
 from .PreProcessTextData import *
 
 
-import os
+import csv
 import torch
 import tensorflow
 import numpy as np
-import tensorflow
 import pandas as pd
-from tensorflow.keras  import models
+from torch.utils.data import Dataset
+from tensorflow.keras import models
 from tensorflow.keras.models import Sequential
+from torch.utils.data import Dataset, DataLoader
 from tensorflow.keras.utils import to_categorical
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.layers import Dense, LSTM, Embedding
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers.experimental import preprocessing
 
 
+class CodesDataset(Dataset):
+    def __init__(self, jokes_dataset_path='./'):
+        super().__init__()
+        code_dataset_path = AIPipelineConfiguration.defaultCodeTrainDataset
+        self.code_list = []
+        self.end_of_text_token = "<|endoftext|>"
+        with open(code_dataset_path) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            x = 0
+            for row in csv_reader:
+                code_str = f"{row[1]}{self.end_of_text_token}"
+                self.code_list.append(code_str)
+
+    def __len__(self):
+        return len(self.code_list)
+
+    def __getitem__(self, item):
+        return self.code_list[item]
 
 class CodeGenerationModel(AIPipelineConfiguration):
     X = []
     y = []
     seedText = ''
-    generatorModel=None
-    TrainedModel='gpt2'
+    generatorModel = None
+    trainedModel = 'code_generation_trained_distilgpt2.pt'
     tokenizer = None
     EncodedCodes = [];
     nGramcodeList = []
     rawCodeList = [];
     maxLengthPadding = 40
-    predictCodeLength =2
+    predictCodeLength = 2
     maxLineReturn = 3
     df = pd.DataFrame();
     modelLSTM = Sequential()
     coustomDatasetLine = 2000
     paddedCodeNgramSequences = []
+    transformerModelName = 'distilgpt2'
+
+    codeLoder = []
+    MaxSeqLen = 200
+    Learning_rate = 3e-5
+    tokenizer_class = None
+
+    modelClasses = {
+        # "gpt2": (GPT2LMHeadModel, GPT2Tokenizer),
+        # "gpt2-medium": (GPT2LMHeadModel, GPT2Tokenizer),
+        "distilgpt2": (GPT2LMHeadModel, GPT2Tokenizer),
+    }
 
     def __init__(self, useSavedModel=True,
                  defaultDatasetName='',
                  device='cpu',
                  codeLineColumn='codes',
-                 transformerModelName="congcongwang/gpt2_medium_fine_tuned_coder",
-                 epochs=60,
-                 batchSize=64,
+                 epochs=3,
+                 batchSize=16,
                  seqXLength=0,
                  codeVocabSize=0,
                  temperature_GPT=1.0,
@@ -54,7 +85,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
                  repetition_penalty_GPT=1.0
 
                  ):
-        self.device = device
+        self.device = 'cpu'
+        if torch.cuda.is_available():
+            self.device = 'cuda'
         self.epochs = epochs
         self.batchSize = batchSize
         self.top_k_GPT = top_k_GPT
@@ -66,19 +99,20 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.temperature_GPT = temperature_GPT
         self.defaultDatasetName = defaultDatasetName
         self.repetition_penalty_GPT = repetition_penalty_GPT
-        self.transformerModelName = "congcongwang/distilgpt2_fine_tuned_coder",
         self.token = Tokenizer(lower=False, filters='!"#$%&*+,-./:;<=>?@[\\]^_`{|}~\t\n');
         if (defaultDatasetName == ''):
             self.defaultDatasetName = self.defaultCodeTrainDataset
-
+            
 
 
     def loadCodeData(self, path=''):
-        # if (path == ''):
         here = os.path.abspath(os.path.dirname(__file__))
-        self.df = pd.read_csv(os.path.join(here, "project_source_codes.csv"))
+        self.df = pd.read_csv(os.path.join(here, "codes.csv"))
         self.df = self.df[:self.coustomDatasetLine]
         return (self.df)
+
+    def getTransformerModel(self):
+        return (self.transformerModelName)
 
     def codeToRawCodeList(self):
         self.rawCodeList = self.df[self.codeLineColumn].tolist()
@@ -153,14 +187,15 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.modelLSTM.compile(loss='categorical_crossentropy', optimizer='adam', metrics=["accuracy"])
         self.modelLSTM.fit(self.X, self.y, batch_size=self.batchSize, epochs=self.epochs)
         here = os.path.abspath(os.path.dirname(__file__))
-        self.modelLSTM.save(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model') )
+        self.modelLSTM.save(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
 
     def loadSavedModel(self):
         import os
         here = os.path.abspath(os.path.dirname(__file__))
         isfile = os.path.exists(os.path.join(here + "/trained_models/LSTM_code_generation_model/", 'saved_model.pb'))
         if isfile:
-            self.modelLSTM = tensorflow.keras.models.load_model(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
+            self.modelLSTM = tensorflow.keras.models.load_model(
+                os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
             return True
         return False
 
@@ -173,7 +208,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.nGramcodeSeqPadding()
         self.provideModelInputOutPut()
         # load saved model
-        if self.useSavedModel == True :
+        if self.useSavedModel == True:
             self.loadSavedModel()
         else:
             self.TrainLSTMModel()
@@ -215,7 +250,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.model = AutoModelWithLMHead.from_pretrained("congcongwang/gpt2_medium_fine_tuned_coder")
 
     def generateCodeByGPT2(self, seed_text, maxLineReturn, lengthCodeLine):
-        self.seedText = seed_text
+        self.seedaText = seed_text
         self.predictCodeLength = lengthCodeLine
         self.maxLineReturn = lengthCodeLine
         self.PrepareModelGPT2()
@@ -246,36 +281,35 @@ class CodeGenerationModel(AIPipelineConfiguration):
             generatedCodesequences.append(total_sequence)
 
         return generatedCodesequences
-    
+
     def getCurrentDirectory(self):
         import os
         path = os.getcwd()
-        return(path)
-    
+        return (path)
+
     def getParentDirectory(self):
         import os
         path = os.getcwd()
-        return(os.path.abspath(os.path.join(path, os.pardir)))
-    
+        return (os.path.abspath(os.path.join(path, os.pardir)))
+
     def getTrainedModelsDirectory(self):
         import os
         from smartclide_service_classification_autocomplete import getPackagePath
         packageRootPath = getPackagePath()
-        return (packageRootPath+"/trained_models/")
-    
+        return (packageRootPath + "/trained_models/")
 
-    def getTrainedModel(self,modelName):
+    def getTrainedModel(self, modelName):
         import os
         TrainrdModelPath = self.getTrainedModelsDirectory()
-        path=TrainrdModelPath+'/'+modelName
+        path = TrainrdModelPath + '/' + modelName
         return path
 
-    def IsTrainedModelExist(self,modelName):
+    def IsTrainedModelExist(self, modelName):
         import os
         TrainrdModelPath = self.getTrainedModelsDirectory()
-        isfile = os.path.exists(TrainrdModelPath+'/'+modelName)
+        isfile = os.path.exists(TrainrdModelPath + '/' + modelName)
         return isfile
-    
+
     def loadGenerator(self):
         import os
         import pickle
@@ -285,19 +319,126 @@ class CodeGenerationModel(AIPipelineConfiguration):
             self.generatorModel = pickle.load(file)
             file.close()
         else:
-            self.generatorModel = pipeline('text-generation', model=self.TrainedModel)
-            pickle.dump(self.generatorModel,open(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"), 'wb'))  
-            
+            self.generatorModel = pipeline('text-generation', model='gpt2')
+            pickle.dump(self.generatorModel,
+                        open(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"), 'wb'))
+
         return (self.generatorModel)
-    
-    
-    
-    def GenerateCode(self,codeInput,maxLength):
-        if (self.generatorModel != None) :
-                generated_code_arr = self.generatorModel(codeInput, max_length=maxLength, do_sample=True, temperature=0.9) 
-                generatedCode=generated_code_arr[0]['generated_text']
-                return(generatedCode)
 
+    def GenerateCode(self, codeInput, maxLength):
+        if (self.generatorModel != None):
+            generated_code_arr = self.generatorModel(codeInput, max_length=maxLength, do_sample=True, temperature=0.9)
+            generatedCode = generated_code_arr[0]['generated_text']
+            return (generatedCode)
 
+    def loadDataset(self):
+        dataset = CodesDataset()
+        self.codeLoder = DataLoader(CodesDataset(), batch_size=1, shuffle=True)
+        return self.codeLoder
 
+    def trainGenerator(self, model_type=""):
 
+        from transformers import GPT2Tokenizer, GPT2LMHeadModel
+        from transformers import AdamW
+
+        if model_type == "":
+            model_type = self.transformerModelName
+            print(model_type)
+
+        try:
+            model_type = model_type.lower()
+            model_class, tokenizer_class = self.modelClasses[model_type]
+        except KeyError:
+            raise KeyError("the model {} you specified is not supported.)")
+
+        tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
+        model_class = GPT2LMHeadModel.from_pretrained(self.getTransformerModel())
+        model_class = model_class.to(self.device)
+        model_class.train()
+        optimizer = AdamW(model_class.parameters(), lr=self.Learning_rate)
+        proc_seq_count = 0
+        sum_loss = 0.0
+        batch_count = 0
+        tmp_codes_tens = None
+        models_folder = "trained_models"
+        if not os.path.exists(models_folder):
+            os.mkdir(models_folder)
+
+        epoch = self.epoch
+        print(f"EPOCH {epoch} started" + '=' * 30)
+        for idx, code in enumerate(self.codeLoder):
+            code_tens = torch.tensor(tokenizer_class.encode(code[0])).unsqueeze(0).to(self.device)
+            # Skip sample from dataset if it is longer than MAX_SEQ_LEN
+            if code_tens.size()[1] > self.MaxSeqLen:
+                continue
+
+            # The first code sequence in the sequence
+            if not torch.is_tensor(tmp_codes_tens):
+                tmp_codes_tens = code_tens
+                continue
+            else:
+                # The next code does not fit in so we process the sequence and leave the last code
+                # as the start for next sequence
+                if tmp_codes_tens.size()[1] + code_tens.size()[1] > self.MaxSeqLen:
+                    work_codes_tens = tmp_codes_tens
+                    tmp_codes_tens = code_tens
+                else:
+                    # Add the code to sequence, continue and try to add more
+                    tmp_codes_tens = torch.cat([tmp_codes_tens, code_tens[:, 1:]], dim=1)
+                    continue
+
+            outputs = model_class(work_codes_tens, labels=work_codes_tens)
+            loss, logits = outputs[:2]
+            loss.backward()
+            sum_loss = sum_loss + loss.detach().data
+
+            proc_seq_count = proc_seq_count + 1
+            if proc_seq_count == self.batchSize:
+                proc_seq_count = 0
+                batch_count += 1
+                optimizer.step()
+                # scheduler.step()
+                optimizer.zero_grad()
+                model_class.zero_grad()
+
+            if batch_count == 100:
+                print(f"sum loss {sum_loss}")
+                batch_count = 0
+                sum_loss = 0.0
+
+        # Store the model after each epoch to compare the performance of them
+        torch.save(model_class.state_dict(), os.path.join(models_folder, f"code_generation_trained_distilgpt2.pt"))
+
+    def loadGPT2Generator(self):
+        import os
+        import torch
+        try:
+            models_folder = self.getTrainedModelsDirectory()
+#             if (self.IsTrainedModelExist('code_generation_trained_distilgpt2.pt')):
+            model_path = os.path.join(models_folder, f"code_generation_trained_distilgpt2.pt")
+            print(model_path)
+            self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
+            self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModel(),
+                                                                  pad_token_id=self.tokenizer_class.eos_token_id)
+            self.generatorModel.load_state_dict(torch.load(model_path))
+        except FileNotFoundError:
+            print("No training file is exist")
+        return (self.generatorModel)
+
+    def generateCodeByTrainedGPT2(self, inputCode):
+        try:
+            self.generatorModel.to(self.device)
+        except FileNotFoundError:
+            self.loadGPT2Generator()
+            self.generatorModel.to(self.device)
+        length = 6
+        tokenizer = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
+        encoded_prompt = tokenizer.encode(inputCode, add_special_tokens=False, return_tensors="pt")
+        # encoded_prompt.to(device)
+        output_sequences = self.generatorModel.generate(input_ids=encoded_prompt, max_length=6)
+        stop_token = "<|endoftext|>"
+        generated_sequence = output_sequences[0].tolist()
+        code = tokenizer.decode(generated_sequence, clean_up_tokenization_spaces=True)
+        code = code[: code.find("<|endoftext|>") if stop_token == 1 else None]
+        print(code)
+        return code
