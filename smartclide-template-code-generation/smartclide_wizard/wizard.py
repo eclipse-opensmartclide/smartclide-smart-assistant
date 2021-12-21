@@ -23,5 +23,4 @@ class Wizard:
 
 		# build components
 		code_generator = JavaCodeGenerator()
-		class_generated = code_generator.generate(workflow)
-		print(class_generated)
+		class_generated = list(code_generator.generate(workflow))
