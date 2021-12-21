@@ -11,6 +11,8 @@ from smartclide_smart_assistant import config
 from smartclide_smart_assistant.api.v1 import api
 from smartclide_smart_assistant.api import namespaces_v1
 from smartclide_smart_assistant.core import cache, limiter
+from smartclide_smart_assistant.mom_connector.rabbitmq_connector import BackgroundAPIRabbitMQConsumer
+
 
 app = Flask(__name__)
 
@@ -67,17 +69,27 @@ def initialize_app(flask_app):
         api.add_namespace(ns)
 
 
-def main():
-    initialize_app(app)
-    separator_str = ''.join(map(str, ["=" for i in range(175)]))
-    print(separator_str)
-    print(f'Debug mode: {config.DEBUG_MODE}')
-    print(f'Authors: {get_authors()}')
-    print(f'Version: {get_version()}')
-    print(f'Base URL: http://localhost:{config.PORT}{config.URL_PREFIX}')
-    print(separator_str)
-    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG_MODE)
+def initialize_mom():
 
+    c = BackgroundAPIRabbitMQConsumer(
+            host=config.rabbitmq_host
+            ,user=config.rabbitmq_user
+            ,password=config.rabbitmq_password
+            ,channel_endpoint_mappings=config.channel_endpoint_mappings
+        )
+    try:
+        c.start()
+    except Exception as e:
+        print(f'Unable to connect to MoM: {e}')
+
+
+def main():
+    separator_str = ''.join(map(str, ["=" for i in range(80)]))
+    print(separator_str)
+    initialize_mom()
+    print(separator_str)
+    initialize_app(app)
+    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG_MODE)
 
 
 if __name__ == '__main__':

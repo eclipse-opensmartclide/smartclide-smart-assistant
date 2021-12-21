@@ -4,7 +4,6 @@
 """The setup script"""
 
 import os
-import io
 from setuptools import setup, find_packages
 
 

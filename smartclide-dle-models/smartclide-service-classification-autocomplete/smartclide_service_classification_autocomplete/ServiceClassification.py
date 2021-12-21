@@ -31,6 +31,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # # toknize
 import nltk
 
+
 class ServiceClassificationModel(AIPipelineConfiguration):
     X = []
     y = []
@@ -334,7 +335,6 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def loadSavedModel(self, modelName):
         path = self.getTrainedModelsDirectory()
-        print(path)
         if modelName == 'BOWML':
             isfile = os.path.exists(os.path.join(path, 'service_classification_bow_svc.pkl'))
             if isfile:
@@ -350,4 +350,3 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         else:
             return False
         return False
-

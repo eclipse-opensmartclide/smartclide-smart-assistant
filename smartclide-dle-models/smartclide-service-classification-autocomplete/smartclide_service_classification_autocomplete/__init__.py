@@ -69,12 +69,5 @@ def save_response_content(response, destination):
 #         fileId= trainedModelDir+modelTrainedInfo[i]['file_id']
 #         print(modelTrainedInfo[i]['file_name']+" is downloading .....")
 #         download_file_from_google_drive(fileId, path)
-#         print(modelTrainedInfo[i]['file_name']+" is Downloaded.")    
+#         print(modelTrainedInfo[i]['file_name']+" is Downloaded.") 
 
-
-
-
-  
-    
-    
-   

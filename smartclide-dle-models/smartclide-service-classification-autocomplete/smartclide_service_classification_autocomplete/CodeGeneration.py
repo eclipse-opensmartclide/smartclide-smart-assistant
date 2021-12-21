@@ -9,6 +9,7 @@ import csv
 import torch
 import tensorflow
 import numpy as np
+import tensorflow
 import pandas as pd
 from torch.utils.data import Dataset
 from tensorflow.keras import models
@@ -32,7 +33,7 @@ class CodesDataset(Dataset):
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0
             for row in csv_reader:
-                code_str = f"{row[1]}{self.end_of_text_token}"
+                code_str = f"Code:{row[1]}{self.end_of_text_token}"
                 self.code_list.append(code_str)
 
     def __len__(self):
@@ -40,6 +41,8 @@ class CodesDataset(Dataset):
 
     def __getitem__(self, item):
         return self.code_list[item]
+
+
 
 class CodeGenerationModel(AIPipelineConfiguration):
     X = []
@@ -250,7 +253,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
         self.model = AutoModelWithLMHead.from_pretrained("congcongwang/gpt2_medium_fine_tuned_coder")
 
     def generateCodeByGPT2(self, seed_text, maxLineReturn, lengthCodeLine):
-        self.seedaText = seed_text
+        self.seedText = seed_text
         self.predictCodeLength = lengthCodeLine
         self.maxLineReturn = lengthCodeLine
         self.PrepareModelGPT2()
@@ -407,16 +410,15 @@ class CodeGenerationModel(AIPipelineConfiguration):
                 sum_loss = 0.0
 
         # Store the model after each epoch to compare the performance of them
-        torch.save(model_class.state_dict(), os.path.join(models_folder, f"code_generation_trained_distilgpt2.pt"))
+        torch.save(model_class.state_dict(), os.path.join(models_folder, f"gpt2_codegenerator_trained.pt"))
 
     def loadGPT2Generator(self):
         import os
         import torch
+
         try:
-            models_folder = self.getTrainedModelsDirectory()
-#             if (self.IsTrainedModelExist('code_generation_trained_distilgpt2.pt')):
-            model_path = os.path.join(models_folder, f"code_generation_trained_distilgpt2.pt")
-            print(model_path)
+            models_folder = "trained_models"
+            model_path = os.path.join(models_folder, f"gpt2_codegenerator_trained.pt")
             self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
             self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModel(),
                                                                   pad_token_id=self.tokenizer_class.eos_token_id)

@@ -6,6 +6,7 @@
 from .ServiceClassification import *
 from flask import jsonify
 
+
 class PredictServiceClassModel():
     def predict(self, serviceName, serviceDesc, serviceID=None, method="Default"):
         result = None
@@ -47,9 +48,3 @@ class PredictServiceClassModel():
             }
         results.append(result)
         return ({'result': results})
-
-
-
-
-
-

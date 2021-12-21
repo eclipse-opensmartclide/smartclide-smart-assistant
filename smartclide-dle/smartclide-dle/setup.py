@@ -20,7 +20,7 @@ def read_requeriments_file(filename):
 
 setup(
     name='smartclide-dle',
-    version='1.0',
+    version='2.0',
     packages=find_packages(),
     url='https://github.com/air-institute/smartclide-dle',
     download_url='https://github.com/air-institute/smartclide-dle/archive/master.zip',

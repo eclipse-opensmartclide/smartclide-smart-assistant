@@ -10,3 +10,9 @@ numpy>=1.16.5
 matplotlib
 seaborn
 spacy==2.3.5
+scikit-learn
+yaconfig
+celery<5
+werkzeug>=1.0
+coloredlogs
+pyyaml

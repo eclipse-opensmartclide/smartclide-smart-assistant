@@ -17,3 +17,17 @@ MONGO_DB = 'smartclide-smart-assistant'
 MONGO_IP = 'localhost'
 MONGO_PORT = 27017
 MONGO_URI = f'mongodb://{MONGO_IP}:{MONGO_PORT}/{MONGO_DB}'
+
+# rabbitmq configuration
+rabbitmq_host = 'aaaaaaaaaaaaaaa'
+rabbitmq_user = 'aaaaaaaaaaaaaaa'
+rabbitmq_password = 'aaaaaaaaaaaaaaa'
+channel_endpoint_mappings = {k: f'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/{v}' 
+	for k,v in {
+	    'acceptance_tests_queue': 'acceptance',
+	    'bpmn_item_recommendation_queue': 'bpmnitemrecommendation',
+	    'code_generation_queue': 'codegen',
+	    'code_repo_recommendation_queue': 'coderepo',
+	    'enviroment_queue': 'enviroment'
+	}.items()
+}

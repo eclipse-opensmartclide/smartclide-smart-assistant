@@ -10,6 +10,7 @@ from flask import Flask, Blueprint, redirect, request
 from smartclide_dle import config
 from smartclide_dle.api.v1 import api
 from smartclide_dle.api import namespaces_v1
+from smartclide_dle.iamodeler import iamodeler_ns_v1
 from smartclide_dle.core import cache, limiter
 
 app = Flask(__name__)
@@ -17,6 +18,30 @@ app = Flask(__name__)
 VERSION = (1, 0)
 AUTHOR = 'AIR Institute'
 
+
+# =======================
+# IAmodeler configuration
+# =======================
+
+app.config.update(
+    ERROR_404_HELP=False,  # No "but did you mean" messages
+    RESTX_MASK_SWAGGER=False,  # No fields mask
+)
+
+# Log POST bodies
+@app.before_request
+def log_request_info():
+    # app.logger.debug('Headers: %s', request.headers)
+    data = request.get_data()
+    if data:
+        try:
+            app.logger.info('Body: %s', data.decode())
+        except UnicodeDecodeError:
+            app.logger.info('Body: <Non UTF8 content>')
+
+# =============================
+# IAmodeler configuration (end)
+# =============================
 
 def get_version():
     """
@@ -64,6 +89,9 @@ def initialize_app(flask_app):
     flask_app.config.from_object(config)
 
     for ns in namespaces_v1:
+        api.add_namespace(ns)
+    
+    for ns in iamodeler_ns_v1:
         api.add_namespace(ns)
 
 

@@ -159,6 +159,9 @@ class PredictiveModelToolAssistant(Resource):
 @dle_ns.route('/codegen')
 class CodeSuggestEndpoint(Resource):
 
+    def __init__(self):
+        self.model = CodeMarkovSuggest()
+
     @api.expect(codegen_model)
     @api.response(404, 'Data not found')
     @api.response(500, 'Unhandled errors')
@@ -189,8 +192,7 @@ class CodeSuggestEndpoint(Resource):
 
         # perform prediction
         try:
-            model = CodeMarkovSuggest()
-            code_suggestions = model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
+            code_suggestions = self.model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 

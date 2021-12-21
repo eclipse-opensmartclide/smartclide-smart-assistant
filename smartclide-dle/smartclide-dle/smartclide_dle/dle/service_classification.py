@@ -4,6 +4,7 @@
 # See LICENSE for details.
 
 
+import requests
 from typing import Tuple
 
 from smartclide_service_classification_autocomplete import PredictServiceClassModel
@@ -11,7 +12,7 @@ from smartclide_service_classification_autocomplete import PredictServiceClassMo
 
 class ServiceClassification:
 
-    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'default') -> Tuple[str,str]:
+    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[str,str]:
 
         # predict
         service_classification = PredictServiceClassModel()
@@ -23,3 +24,6 @@ class ServiceClassification:
         category = 'Generic Service' if not category else category
 
         return category, method
+
+
+
