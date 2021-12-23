@@ -13,7 +13,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt')
-    
+nltk.download('omw-1.4')    
 
 class TextDataPreProcess:
 
