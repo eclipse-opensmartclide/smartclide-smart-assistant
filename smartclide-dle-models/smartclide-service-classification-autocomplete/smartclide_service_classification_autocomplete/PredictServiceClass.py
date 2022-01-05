@@ -24,7 +24,7 @@ class PredictServiceClassModel():
                 else:
                     serviceClass = pred[0]
             if method == 'Default':
-                serviceObjML = ServiceClassificationModel(True, 'Description', 'Category_lable')
+                serviceObjML = ServiceClassificationModel(True, 'Description', 'Category')
                 pred = serviceObjML.predictBOWML(serviceDesc)
                 #                         if len(pred[0]) < 1:
                 #                             errorMsg = 'Training need more resource'
