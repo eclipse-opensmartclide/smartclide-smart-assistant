@@ -8,6 +8,8 @@ class AutocompleteCodeModel():
 
     def __init__(self):
         self.level=1
+        codeGenObj = CodeGenerationModel(True)
+        self.generator = codeGenObj.loadGenerator()
 #         codeGenObj = CodeGenerationModel()
         #ToDO remove this line after adding lgfs train file
 #         codeGenObj.loadTrainedGenerator()
