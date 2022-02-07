@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-# Copyright 2021 AIR Institute
-# See LICENSE for details.
+#!/usr/bin/python3
+# Eclipse Public License 2.0
+
 import os
 
-path = os.getcwd()
-_PATH_ROOT_ = path + '/smartclide_service_classification_autocomplete/'
 from .AIPipelineConfiguration import *
 from .PreProcessTextData import *
 
@@ -15,25 +12,23 @@ import sys
 
 sys.path.insert(1, _PATH_dataset_)
 
-import smartclide_service_classification_autocomplete
 import io
 import os
 import torch
-# import ktrain
 import pickle
 import pandas as pd
 import numpy as np
-# from sklearn import *
 from nltk.tokenize import RegexpTokenizer
 from sklearn.preprocessing import normalize
 from nltk.stem.wordnet import WordNetLemmatizer
+import smartclide_service_classification_autocomplete
 
 # Load the library with the CountVectorizer method
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# # toknize
+#toknize
 import nltk
 
 class ServiceClusterModel(AIPipelineConfiguration):

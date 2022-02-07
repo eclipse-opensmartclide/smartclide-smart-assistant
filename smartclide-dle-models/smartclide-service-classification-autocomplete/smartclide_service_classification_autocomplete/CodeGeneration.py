@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# Eclipse Public License 2.0
+
 import os
 path = os.getcwd()
 _PATH_ROOT_ = path+'/smartclide_service_classification_autocomplete/'

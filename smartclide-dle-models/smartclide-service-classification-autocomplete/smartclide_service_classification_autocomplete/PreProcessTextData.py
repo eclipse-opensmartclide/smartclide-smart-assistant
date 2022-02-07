@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# Eclipse Public License 2.0
+
 import re
 import pandas as pd
 import numpy as np
@@ -9,16 +12,17 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.tokenize import WhitespaceTokenizer
 from nltk import sent_tokenize, word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
-
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt')
-nltk.download('omw-1.4')    
+nltk.download('omw-1.4') 
+   
 
 class TextDataPreProcess:
 
     def __init__(self):
-        self.level = 1
+        self.level=1
+
 
     def cleanPunc(self, sentence):
         import re

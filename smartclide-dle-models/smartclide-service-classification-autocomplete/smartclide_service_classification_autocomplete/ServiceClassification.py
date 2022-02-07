@@ -21,7 +21,7 @@ import smartclide_service_classification_autocomplete
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # # toknize
-import nltk
+# import nltk
 
 _PATH_dataset_ = './data'
 
@@ -90,6 +90,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             self.device = 'cuda'
         else:
             self.device = 'cpu'
+            
+        self.textPreProcessOBJ= TextDataPreProcess()  
 
             
                      
@@ -210,8 +212,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         """
         if clmName == '':
             clmName = 'description'
-        textPreProcessOBJ = TextDataPreProcess()
-        self.df[clmName] = self.df[clmName].apply(textPreProcessOBJ.wordLemmatizer)
+        self.df[clmName] = self.df[clmName].apply(self.textPreProcessOBJ.wordLemmatizer)
         return (self.df)
 
     def getCommonWord(self, clmName, n=50):
@@ -220,10 +221,9 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         :param clmName: string param specifies target colmn  
         """
         from sklearn.feature_extraction.text import CountVectorizer
-        textPreProcessOBJ = TextDataPreProcess()
         countVectorizerOBJ = CountVectorizer()
         countData = countVectorizerOBJ.fit_transform(self.df[clmName])
-        commonWords = textPreProcessOBJ.getCommonWords(countData, countVectorizerOBJ, n)
+        commonWords = self.textPreProcessOBJ.getCommonWords(countData, countVectorizerOBJ, n)
         return commonWords
 
     def removeCommonWords(self, clmName, n=50):
@@ -341,10 +341,9 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         Predict service class based on user input text and ML trained model 
         :return: preprocessed df
         """
-        textPreProcessOBJ = TextDataPreProcess()
         x = x.lower()
-        x = textPreProcessOBJ.removeStopWords(x)
-        x = textPreProcessOBJ.cleanPunc(x)
+        x = self.textPreProcessOBJ.removeStopWords(x)
+        x = self.textPreProcessOBJ.cleanPunc(x)
         if (len(x) < 2):
             return False
 

@@ -1,14 +1,15 @@
-# !/usr/bin/env python
-# coding: utf-8
-# Copyright 2021 AIR Institute
-# See LICENSE for details.
+#!/usr/bin/python3
+# Eclipse Public License 2.0
 
 from .CodeGeneration import *
 from flask import jsonify
 
-
 class AutocompleteCodeModel():
-
+    """
+    These trained models need a gateway between the trained models and user interfaces.
+    This Class provide interface for models and DLE apis
+    """
+    
     def __init__(self):
         codeGenObj = CodeGenerationModel(True)
         self.generator = codeGenObj.loadGenerator()

@@ -1,14 +1,22 @@
-# !/usr/bin/env python
-# coding: utf-8
-# Copyright 2021 AIR Institute
-# See LICENSE for details.
+#!/usr/bin/python3
+# Eclipse Public License 2.0
 
 from .ServiceClassification import *
 from flask import jsonify
 
 
 class PredictServiceClassModel():
+    """
+    These trained models need a gateway between the trained models and user interfaces.
+    This Class provide interface for models and DLE apis
+    """
     def predict(self, serviceName, serviceDesc, serviceID=None, method="Default"):
+        """
+        :param serviceName:      string param specifies service Name 
+        :param serviceDesc:      string param specifies service Description 
+        :param serviceID:        int param specifies specifies service ID in service registery, optinal
+        :param method:           string param specifies using trined models, "Default" use ML model and "Advanced" use DL model
+        """
         result = None
         errorMsg = None
         serviceClass = ''
@@ -16,19 +24,13 @@ class PredictServiceClassModel():
             result = {"Error": "The Method is invalid"}
             return result
         if len(serviceDesc) > 2:
-            if method == 'BSVM':
-                serviceObjBSVM = ServiceClassificationModel(True)
-                pred = serviceObjBSVM.predictBSVMModel(serviceDesc)
-                if len(pred[0]) < 1:
-                    errorMsg = 'Training need more resource'
-                else:
-                    serviceClass = pred[0]
+            if method == 'Advanced':
+               #TODO
+               serviceClass="Under develope"
+                
             if method == 'Default':
                 serviceObjML = ServiceClassificationModel(True, 'Description', 'Category')
                 pred = serviceObjML.predictBOWML(serviceDesc)
-                #                         if len(pred[0]) < 1:
-                #                             errorMsg = 'Training need more resource'
-                #                         else:
                 serviceClass = pred[0]
             results = []
             if not errorMsg == None:
