@@ -20,10 +20,6 @@ from nltk.tokenize import RegexpTokenizer
 import smartclide_service_classification_autocomplete
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# # toknize
-# import nltk
-
-_PATH_dataset_ = './data'
 
 
 
@@ -403,6 +399,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     def loadTrainedClassifier(self):
         """ 
         Load conceptual embedding trained web service classifier
+        :return: string param specifies service class
         """
         import pickle
         from transformers import BertForSequenceClassification, AdamW, BertConfig
