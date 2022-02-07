@@ -1,2 +1,2 @@
 include *.csv *.pkl
-recursive-include trained_models data *.csv *.pkl
+recursive-include  smartclide_service_classification_autocomplete/trained_models *.csv *.pkl *.pt
