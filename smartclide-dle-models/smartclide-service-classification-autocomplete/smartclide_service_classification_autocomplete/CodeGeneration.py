@@ -289,51 +289,8 @@ class CodeGenerationModel(AIPipelineConfiguration):
         print(code)
         return code
 
-    def loadTrainedGenerator(self):
-        """ Load trained web service code generator"""
-        import pickle
-        import torch
-        from transformers import pipeline
-
-        try:
-            models_folder = "trained_models"
-            model_path = os.path.join(models_folder, f"gpt2_codegenerator_trained.pt")
-            #             self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModelName())
-            #             self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModelName())
-            self.tokenizer_class = GPT2Tokenizer.from_pretrained('gpt2')
-            self.generatorModel = GPT2LMHeadModel.from_pretrained('gpt2')
-            self.generatorModel.load_state_dict(torch.load(model_path, map_location=torch.device(self.device)))
 
 
-        except FileNotFoundError:
-            print("No training file is exist")
-        return (self.generatorModel)
-
-    def generate_code_trainedGPT2(self, seed_text, lengthCodeLine, max_line_return):
-        """ Generate code using trained  web service code generator
-            with optional lengthCodeLine and max_line_return
-        """
-
-        self.seed_text = seed_text
-        self.predict_code_length = lengthCodeLine
-        self.max_line_return = max_line_return
-
-        encoded_prompt = self.tokenizer_class.encode(self.seed_text, add_special_tokens=False, return_tensors="pt")
-        encoded_prompt = encoded_prompt.to(self.device)
-
-        output_sequences = self.generatorModel.generate(
-            input_ids=encoded_prompt,
-            max_length=self.predict_code_length, num_beams=5, no_repeat_ngram_size=2, num_return_sequences=3,
-            early_stopping=True)
-
-        for output in output_sequences:
-            print("--------")
-            generated_sequence = output.tolist()
-            generatedCodes = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True)
-            generatedCodes = generatedCodes[: generatedCodes.find(self.stop_token) if stop_token == 1 else None]
-            print(generatedCodes)
-
-        return generatedCodes
 
     def loadTrainedGenerator(self):
         """

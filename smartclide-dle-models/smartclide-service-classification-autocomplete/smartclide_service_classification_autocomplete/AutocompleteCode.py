@@ -7,9 +7,10 @@ from flask import jsonify
 class AutocompleteCodeModel():
 
     def __init__(self):
-        self.level=1
-        codeGenObj = CodeGenerationModel(True)
-        self.generator = codeGenObj.loadGenerator()
+        codeGenObj = CodeGenerationModel()
+        codeGenObj.loadTrainedGenerator()
+        self.generator = codeGenObj
+        
 #         codeGenObj = CodeGenerationModel()
         #ToDO remove this line after adding lgfs train file
 #         codeGenObj.loadTrainedGenerator()
@@ -21,22 +22,24 @@ class AutocompleteCodeModel():
 
     def generateCode(self, codeInput, codeSuggLen, codeSuggLines=1, method="Default", language="java"):
         error = ''
+        generatedCodeList = []
         generatedCode = ''
         if len(codeInput) > 2:
             #ToDO remove this line after adding lgfs train file
             if method == 'GPT' or method == 'Default':
-                generatedCode[0]="Under develope,waiting for upload git lgfs file ..."
+                generatedCodeList.append("Under develope,waiting for upload git lgfs file ...")
 
-#             if method == 'GPT' or method == 'Default':
-#                 generated_code_arr = self.generator(codeInput, max_length=codeSuggLen, do_sample=True, temperature=0.9)
-#                 generatedCode = generated_code_arr[0]['generated_text']
-#             if method == 'GPT-2' :
-#                 generatedCode=self.generator.generate_code_trainedGPT2(codeInput,codeSuggLen,codeSuggLines)
+            if method == 'GPT-2' :
+                generatedCodeList.append("Under develope,waiting for upload git lgfs file ...")
+                # generatedCode=self.generator.generate_code_trainedGPT2(codeInput,codeSuggLen,codeSuggLines)
+
     
         result = {
-            "code_sugg1": generatedCode[0],
-            "code_sugg2":'',
+            "code_sugg1": generatedCodeList,
+            "code_sugg2": generatedCodeList,
             "Method": method,
+            "codeSuggLen": codeSuggLen,
+            "codeSuggLines": codeSuggLines,
             "language": language
         }
     
