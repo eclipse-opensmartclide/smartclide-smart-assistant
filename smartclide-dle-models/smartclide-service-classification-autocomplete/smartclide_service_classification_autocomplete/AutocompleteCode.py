@@ -31,7 +31,7 @@ class AutocompleteCodeModel():
 
             if method == 'GPT-2' :
                 generatedCodeList.append("Under develope,waiting for upload git lgfs file ...")
-                # generatedCode=self.generator.generate_code_trainedGPT2(codeInput,codeSuggLen,codeSuggLines)
+                # generatedCodeList=self.generator.generate_code_trainedGPT2(codeInput,codeSuggLen,codeSuggLines)
 
     
         result = {
