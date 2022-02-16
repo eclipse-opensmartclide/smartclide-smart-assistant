@@ -1,10 +1,6 @@
 # [smartclide-dle](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle/smartclide-dle)
 Flask-restx API developed to serve SmartCLIDE DLE (Deep Learning Engine), port 5001.
 
-## SmartCLIDE DLE
-
-Flask-restx API developed to serve SmartCLIDE DLE (Deep Learning Engine).
-
 ## Install requirements
 
 ```bash
@@ -50,6 +46,7 @@ Note: if the script `launch.bash` doesn't works, you can use `launch2.bash` inst
 
 # [smartclide-smart-assistant](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle/smartclide-smart-assistant)
 Flask-restx API developed to serve SmartCLIDE Smart Assistant, port 5000.
+
 ## Install requirements
 
 ```bash
@@ -111,9 +108,6 @@ Repository with the models to be served by the DLE. It has automatic deployment 
 - **smartclide-service-classification-autocomplete**: service classification and code autocomplete based in markov-chains.
 
 # [smartclide-template-code-generation](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-template-code-generation)
-Component flow generation tool.
-
-
 Component flow generation tool.
 
 ## Installation
