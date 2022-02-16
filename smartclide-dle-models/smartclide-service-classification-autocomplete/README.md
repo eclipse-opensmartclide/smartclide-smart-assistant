@@ -20,7 +20,7 @@ SmartCLIDE tries to use a language modeling pipeline to generate one-line codes 
 
 
 
-## Usage
+## Install
 
 Both AI models are using same lib, therefore service classification and autocomplete model have packaged together, The list of thirdparty library are listed on requirments.txt file however the two main used library are:
 
@@ -41,5 +41,50 @@ The minimum requirment for using this package is 43GB storage and 16GB RAM requi
 
 However, if the package is installing on AWS EC2, the configuration in TMPDIR is necessary [more info](https://stackoverflow.com/questions/55103162/could-not-install-packages-due-to-an-environmenterror-errno-28-no-space-left)
 
+
+### Usage
+After installing package, the models can be used as follow:
+Service classification can be used via PredictServiceClassModel class as the following example code
+
+```
+from typing import Tuple 
+from typing import List
+from smartclide_service_classification_autocomplete import PredictServiceClassModel
+
+class ServiceClassification2:
+    def __init__(self):
+        '''
+        The DL models  input parameter for PredictServiceClassModel mention loading service model, if the trained models havenot placed in trained_models folder, you need new the class like: PredictServiceClassModel(False)
+        '''
+        self.predict_service_obj = PredictServiceClassModel()
+
+    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[str,str]:
+        # predict
+        result = self.predict_service_obj.predict(service_name, service_description, method=method)
+        return result
+ 
+        
+service_id=1
+service_name="service name text"
+service_desc="service desc text"
+method="Advanced"
+result=model2.predict(service_id,service_name, service_desc,method)
+print(result)        
+        
+```
+The advanced method will return the top 2 categories assigned to service metadata input. the format of output will be:
+```
+
+{'result': [{
+    'Service_name': 'test service', 
+    'Method': 'Advanced', 
+    'Service_id': foo,
+    'Service_class': '(predicted_category1,predicted_category2)'
+    }]
+}
+```
+
+
+Note: The DL models  input parameter for PredictServiceClassModel mention loading service model; if the trained models have not placed in the trained_models folder, you need a new the class like PredictServiceClassModel(False)
 
 
