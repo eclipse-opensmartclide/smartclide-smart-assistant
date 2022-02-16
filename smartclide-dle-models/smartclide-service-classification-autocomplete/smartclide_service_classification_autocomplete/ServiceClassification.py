@@ -353,7 +353,9 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             self.TrainLinerSVCModel()
 
         pred = self.model.predict([x])
-        return pred
+        f_class_=pred[0]
+        s_class_=''
+        return f_class_,s_class_
     
     
     def get_prediction(self,text,k=2):
@@ -368,17 +370,17 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         probs = outputs[0].softmax(1)
         top_tensors=torch.topk(probs.flatten(), 2).indices
         first_cat_int=top_tensors[0].item()
-        print("*"*50)
-        print(first_cat_int)
+        # print("*"*50)
+        # print(first_cat_int)
         currentPath = os.path.abspath(os.path.dirname(__file__))
         df_save=pd.read_csv(os.path.join(currentPath, "data/df_save.csv") )
         f_class_=df_save.loc[df_save['Category'] == first_cat_int]["label"].values[0]
-        print("+"*50)
-        print(f_class_)
+        # print("+"*50)
+        # print(f_class_)
         sec_cat_int=top_tensors[1].item()
         s_class_=df_save.loc[df_save['Category'] == sec_cat_int]["label"].values[0]
 
-        return f_class_
+        return f_class_,s_class_
 
     def loadSavedModel(self, modelName):
         """ 
