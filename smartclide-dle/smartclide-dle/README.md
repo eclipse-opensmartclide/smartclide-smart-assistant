@@ -18,6 +18,17 @@ sudo python3 -m pip install torch==1.5.1+cpu torchvision==0.6.1+cpu -f https://d
 sudo pyton3 -m pip install git+https://github.com/Dih5/zadeh
 ```
 
+## Configuration
+
+The application configuration is set via enviroment variables:
+
+- `DLE_API_PORT`: Port to bind to (default: `5001`). 
+- `DLE_API_BIND`: Address to bind to (default: `0.0.0.0`).
+- `DLE_MONGODB_PORT`: MongoDB database to connect to (default:`27017`).
+- `DLE_MONGODB_HOST`: MongoDB database to connect to (default: `localhost`).
+- `DLE_MONGODB_DB`: MongoDB database to connect to (default: `smartclide-smart-assistant`).
+
+
 ## Run application
 
 Application can be launched with the launch script:
