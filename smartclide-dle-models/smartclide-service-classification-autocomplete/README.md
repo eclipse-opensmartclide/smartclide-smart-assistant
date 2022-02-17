@@ -43,48 +43,7 @@ However, if the package is installing on AWS EC2, the configuration in TMPDIR is
 
 
 ### Usage
-After installing package, the models can be used as follow:
-Service classification can be used via PredictServiceClassModel class as the following example code
 
-```
-from typing import Tuple 
-from typing import List
-from smartclide_service_classification_autocomplete import PredictServiceClassModel
-
-class ServiceClassification2:
-    def __init__(self):
-        '''
-        The DL models  input parameter for PredictServiceClassModel mention loading service model, if the trained models havenot placed in trained_models folder, you need new the class like: PredictServiceClassModel(False)
-        '''
-        self.predict_service_obj = PredictServiceClassModel()
-
-    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[str,str]:
-        # predict
-        result = self.predict_service_obj.predict(service_name, service_description, method=method)
-        return result
- 
-        
-service_id=1
-service_name="service name text"
-service_desc="service desc text"
-method="Advanced"
-result=model2.predict(service_id,service_name, service_desc,method)
-print(result)        
-        
-```
-The advanced method will return the top 2 categories assigned to service metadata input. the format of output will be:
-```
-
-{'result': [{
-    'Service_name': 'test service', 
-    'Method': 'Advanced', 
-    'Service_id': foo,
-    'Service_class': '(predicted_category1,predicted_category2)'
-    }]
-}
-```
-
-
-Note: The DL models  input parameter for PredictServiceClassModel mention loading service model; if the trained models have not placed in the trained_models folder, you need a new the class like PredictServiceClassModel(False)
-
+In SmartCLIDE, many tasks require to run in the background independently of the user interface (UI). AI Models is one of these tasks that need to serve requests in real-time and return results. Consequently, loading the AI model can be time-consuming due to late response. A strategy such as using singleton classes for loading the models can help minimize the application UI load, improve availability, and reduce interactive response times.
+You can find the example code which describes how to import and use the package in the example folder.
 
