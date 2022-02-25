@@ -61,7 +61,7 @@ class ServiceClassificationEndpoint(Resource):
         # perform prediction
         try:
             model = ServiceClassification()
-            service_category, method = model.predict(service_id, service_name, service_desc)
+            categories, method, _ = model.predict(service_id, service_name, service_desc)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 
@@ -69,8 +69,8 @@ class ServiceClassificationEndpoint(Resource):
         result = {
             'method': method,
             'service_id': service_id,
-            'service_name': service_name,
-            'service_class': service_category
+            'service_class': categories,
+            'service_name': service_name
         }
 
         return result
@@ -192,15 +192,17 @@ class CodeSuggestEndpoint(Resource):
 
         # perform prediction
         try:
-            code_suggestions = self.model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
+            code, code_len, code_lines, method, lang = self.model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 
         # format and return results
         result = {
             'method': method,
-            'language': language,
-            'code_suggestions': code_suggestions
+            'language': lang,
+            'code_suggestions': code,
+            'code_len': code_len,
+            'code_lines': code_lines
         }
 
         return result

@@ -5,25 +5,31 @@
 
 
 import requests
-from typing import Tuple
+from typing import Tuple, List
 
 from smartclide_service_classification_autocomplete import PredictServiceClassModel
 
 
 class ServiceClassification:
 
-    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[str,str]:
+    def __init__():
+        self.service_classification = PredictServiceClassModel()
+
+    def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[List[str],str,str]:
 
         # predict
-        service_classification = PredictServiceClassModel()
-        result = service_classification.predict(service_name, service_description, method=method)
+        result = self.service_classification.predict(service_name, service_description, method=method)
 
         # extract results
+        
         method = result['result'][0]['Method']
-        category = result['result'][0]['Service_class']
-        category = 'Generic Service' if not category else category
+        service_id = result['result'][0]['Service_id']
+        categories = result['result'][0]['Service_class']
 
-        return category, method
+        categories = list(set([categories]))
+        categories = ['Other'] if not categories or (len(categories) == 1 and not categories[0]) else categories
+
+        return categories, method, service_id
 
 
 

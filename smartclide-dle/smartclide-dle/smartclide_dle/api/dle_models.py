@@ -613,7 +613,9 @@ codegen_model = api.model('CodeGenRequest', {
 codegen_prediction_model = api.model('CodeGenPrediction', {
     'method': fields.String(description="Method used to generate the code", required=True, example='Default'),
     'language': fields.String(description="Language within the code generation is made", required=True, example='java'),
-    'code_suggestions': fields.List(fields.String(description="The list of possible code snippets that follow the input code", required=True, example='support v4 view View'))
+    'code_suggestions': fields.List(fields.String(example='support v4 view View'), description="Generated lins of code", required=True),
+    'code_len': fields.Integer(description='Number of characters of generated code', example=10),
+    'code_lines': fields.Integer(description='Number of lines of generated code', example=10)
 }, description="The recommended gherkin for acceptance tests")
 
 
@@ -646,9 +648,10 @@ service_classification_model = api.model('ServiceClassificationRequest', {
 service_classification_prediction_model = api.model('ServiceClassificationPrediction', {
     'service_id': fields.Integer(description="The id of the service to classify", required=True, example=34333),
     'service_name': fields.String(description="The name of the service to classify", required=True, example="TransLoc openAPI"),
-    'service_class': fields.String(description="The topic within the service has been classified", required=True, example="Transportation"),
+    'service_class': fields.List(fields.String(example="Transportation"), description="The topic within the service has been classified", required=True),
     'method': fields.String(description="Method used to classify", required=True, example="Default"),
 }, description="The method used to perform the clasification")
+
 
 
 code_generation_templates_model = api.model('CodeGenerationRequest', {
