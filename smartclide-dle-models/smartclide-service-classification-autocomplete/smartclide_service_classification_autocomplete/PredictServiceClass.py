@@ -6,12 +6,13 @@ from flask import jsonify
 
 
 class PredictServiceClassModel():
-
-    def __init__(self,load_model=False):
+    classifier=None
+    
+    def __init__(self,load_model=True):
         if load_model:
-          service_classifier_obj= ServiceClassificationModel()
-          service_classifier_obj.loadTrainedClassifier()
-          self.classifier = service_classifier_obj
+            service_classifier_obj= ServiceClassificationModel()
+            if service_classifier_obj.loadTrainedClassifier():
+                self.classifier = service_classifier_obj
     
     def predict(self, serviceName, serviceDesc, serviceID=None, method="Default"):
         result = None
@@ -29,12 +30,18 @@ class PredictServiceClassModel():
                 pred = serviceObjBSVM.predictBSVMModel(serviceDesc)
 
             if method == 'Default':
+                #return a top predicted service category
                 serviceObjML = ServiceClassificationModel(True, 'Description', 'Category')
-                serviceClass = serviceObjML.predictBOWML(serviceDesc)
+                serviceClasses = serviceObjML.predictBOWML(serviceDesc)
 
             if method == 'Advanced':
-                serviceClass="Under develope,waiting for upload git lgfs file ..."
-                # serviceClass =self.classifier.get_prediction(serviceDesc,k=2)
+                #return two top predicted service categories
+                if self.classifier is not None:
+                    serviceClasses =self.classifier.get_prediction(serviceDesc,k=2)
+                else:
+                    serviceClasses=["Under develope,waiting for upload git lgfs file ...",""]
+
+
             results = []
             if not errorMsg == None:
                 result = {
@@ -45,7 +52,7 @@ class PredictServiceClassModel():
                     "Service_name": serviceName,
                     "Method": method,
                     "Service_id": serviceID,
-                    "Service_class": serviceClass
+                    "Service_class": serviceClasses
                 }
         else:
             result = {
@@ -53,4 +60,3 @@ class PredictServiceClassModel():
             }
         results.append(result)
         return ({'result': results})
-

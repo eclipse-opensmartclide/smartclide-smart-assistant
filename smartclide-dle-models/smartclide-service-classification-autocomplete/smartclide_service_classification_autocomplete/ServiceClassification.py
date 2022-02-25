@@ -355,7 +355,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         pred = self.model.predict([x])
         f_class_=pred[0]
         s_class_=''
-        return f_class_,s_class_
+        classes=[f_class_,s_class_]
+        return classes
     
     
     def get_prediction(self,text,k=2):
@@ -380,8 +381,10 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         sec_cat_int=top_tensors[1].item()
         s_class_=df_save.loc[df_save['Category'] == sec_cat_int]["label"].values[0]
 
-        return f_class_,s_class_
+        classes=[f_class_,s_class_]
+        return classes
 
+        
     def loadSavedModel(self, modelName):
         """ 
         Load Saved ML models 
@@ -407,10 +410,16 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         from transformers import BertForSequenceClassification, AdamW, BertConfig
         from transformers import BertTokenizer, BertForMaskedLM
 
+        trained_models_folder = self.getTrainedModelsDirectory()
+        trained_models_files = self.getTrainedModelName()
+        model_path = os.path.join(trained_models_folder, trained_models_files)
+        if not (os.path.exists(model_path)):
+            print("+"*40)
+            print("No training DL service classifier file is exist")
+            print("+"*40)
+            return False
+
         try:
-            trained_models_folder = self.getTrainedModelsDirectory()
-            trained_models_files = self.getTrainedModelName()
-            model_path = os.path.join(trained_models_folder, trained_models_files)
             
             self.classifier_model  = BertForSequenceClassification.from_pretrained(model_path)
             self.tokenizer_class  = BertTokenizer.from_pretrained(model_path)
@@ -425,14 +434,4 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             print("+"*40)
 
         return (self.classifier_model)
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
+ 
