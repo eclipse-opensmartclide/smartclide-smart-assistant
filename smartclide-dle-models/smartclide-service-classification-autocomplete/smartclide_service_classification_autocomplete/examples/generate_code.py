@@ -30,7 +30,6 @@ max_sugges_line specify max line suggestion, recommended value is between 3-5
 '''
 Method="GPT-2"
 lang="java"
-code_input="import android."
 max_lenth=15
 max_sugges_line=3
 code_input="import android."

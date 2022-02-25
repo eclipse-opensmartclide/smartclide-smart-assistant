@@ -24,7 +24,7 @@ class CodesDataset(Dataset):
         """Creates a torch Dataset with opensource codes ."""
         super().__init__()
         self.code_list = []
-        self.end_of_text_token = "<|endcode|>"
+        self.end_of_text_token = "<|endoftext|>"
         with open(code_dataset_path) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0
@@ -54,8 +54,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
     custom_dataset_line = 2000
     padded_code_ngram_sequences = []
     transformer_model_name = 'gpt2'
-    stop_token = '<|endcode|>'
+    stop_token = '<|endoftext|>'
     trained_model = 'gpt2_codegenerator_trained.pt'
+    spechialtokens=['<|endoftext|>']
 
     codeLoder = []
     max_seqlen = 200
@@ -229,21 +230,29 @@ class CodeGenerationModel(AIPipelineConfiguration):
         import torch
         from transformers import pipeline
 
+        trained_models_folder = self.getTrainedModelsDirectory()
+        model_path = os.path.join(trained_models_folder, f"gpt2_codegenerator_trained.pt")
+        print(model_path)
+        if not (os.path.exists(model_path)):
+            print("+" * 40)
+            print("No trained model file is exist.")
+            print("+" * 40)
+            self.generatorModel=None
+            return (self.generatorModel)
+
         try:
-            trained_models_folder = self.getTrainedModelsDirectory()
-            model_path = os.path.join(trained_models_folder, f"gpt2_codegenerator_trained.pt")
+
             self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModelName())
             self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModelName())
-            # self.tokenizer_class = GPT2Tokenizer.from_pretrained('gpt2')
-            # self.generatorModel = GPT2LMHeadModel.from_pretrained('gpt2')
             self.generatorModel.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
             print("+" * 40)
             print("Trained model is loaded on " + self.device)
             print("+" * 40)
 
         except FileNotFoundError:
+            self.generatorModel=None# as deafult GPT will run which we dont need its result
             print("+" * 40)
-            print("No training file is exist GPT2-2-2")
+            print("There is a problem with correctly loading a trained model.")
             print("+" * 40)
 
         return (self.generatorModel)
@@ -255,6 +264,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
             Generate code using trained  web service code generator
             with optional lengthCodeLine and max_line_return
         """
+        self.generatedCodesList=[]
         self.seed_text = seed_text
         self.predict_code_length = lengthCodeLine
         self.max_line_return = max_line_return
@@ -265,41 +275,48 @@ class CodeGenerationModel(AIPipelineConfiguration):
         output_sequences = self.generatorModel.generate(
             input_ids=encoded_prompt,
             max_length=self.predict_code_length,
-            num_beams=5,
+            num_beams=self.max_line_return,
             no_repeat_ngram_size=2,
-            num_return_sequences=self.max_line_return)
+            num_return_sequences=self.max_line_return,            
+            )
 
         text = None
         for output in output_sequences:
             generated_sequence = output.tolist()
-            code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True)
+            code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True, skip_special_tokens=True)
             code_line = code_line[: code_line.find(self.stop_token) if self.stop_token == 1 else None]
             self.generatedCodesList.append(self.post_process_code(code_line))
-        print(self.generatedCodesList)
+            self.generatedCodesList = list(dict.fromkeys(self.generatedCodesList))
         return self.generatedCodesList
 
 
     def post_process_code(self, code):
+        import re
 
-        #ToDO remove duplicate
-        if (code.find("<|endcode|>") != -1):
-            self.stop_token = "<|endcode|>"
-        else:
-            self.stop_token = ";"
+        # #ToDO remove duplicate
+        # if (code.find("<|endcode|>") != -1):
+        #     self.stop_token = "<|endcode|>"
+        # else:
+        #     self.stop_token = ";"
 
-        if len(code) > 2:
-            sugg_line = code.partition(self.stop_token)
-            code_line = sugg_line[0]
-        else:
-            code_line=code
-
-        if len(code_line)  > 2:
-            code_post_process = code_line.replace("<STRING>", '""')
-            return code_post_process
-        else:
-            return code_line
+        # if len(code) > 2:
+        #     sugg_line = code.partition(self.stop_token)
+        #     code_post_process = sugg_line[0]
+        #     code_post_process = re.sub("(<\|e?n?d?c?o?d?e?\|?>?)", "", code_post_process)
+        #     # code_post_process.replace("(<\|e?n?d?c?o?d?e?\|?>?)", "")
+        #     # code_post_process = code_post_process.replace("<STRING>", '""')
+        #     return code_post_process
+        # else:
+        #     return code 
 
         return code 
+
+        # if len(code_line)  > 2:
+        #     code_post_process = code_line.replace("<STRING>", '""')
+        #     return code_post_process
+        # else:
+        #     return code_line
+        # return code 
 
     # LSTM Model
     def loadGenerator(self):
