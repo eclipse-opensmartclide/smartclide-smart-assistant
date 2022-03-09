@@ -653,7 +653,6 @@ service_classification_prediction_model = api.model('ServiceClassificationPredic
 }, description="The method used to perform the clasification")
 
 
-
 code_generation_templates_model = api.model('CodeGenerationRequest', {
     'bpmn_file': fields.String(description="File with the BPMN specification of the service creation", required=True, example=bpmn_example)
 }, description="The template based code generation input request")

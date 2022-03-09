@@ -73,8 +73,6 @@ def initialize_mom():
 
     c = BackgroundAPIRabbitMQConsumer(
             host=config.rabbitmq_host
-            ,user=config.rabbitmq_user
-            ,password=config.rabbitmq_password
             ,channel_endpoint_mappings=config.channel_endpoint_mappings
         )
     try:

@@ -29,16 +29,15 @@ The application configuration is set via enviroment variables:
 - `SA_MONGODB_HOST`: MongoDB database to connect to (default: `localhost`).
 - `SA_MONGODB_DB`: MongoDB database to connect to (default: `smartclide-smart-assistant`).
 - `DLE_BASE_URL`: Base URL for DLE connection (default: `http://smartclide.ddns.net:5001/smartclide/v1/dle`).
-- `RABBITMQ_HOST`: RabbitMQ host to connect to (default: `localhost`).
-- `RABBITMQ_USER`: RabbitMQ user to connect to (default: ``).
-- `RABBITMQ_PASSWORD`: RabbitMQ password to connect to (default: ``).
-- `RABBITMQ_MAPPINGS`: RabbitMQ mappings between channels and API's endpoint namespaces to connect to (default: `{
-	    'acceptance_tests_queue': 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/acceptance',
-	    'bpmn_item_recommendation_queue': 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/bpmnitemrecommendation',
-	    'code_generation_queue': 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/codegen',
-	    'code_repo_recommendation_queue': 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/coderepo',
-	    'enviroment_queue': 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/enviroment'
-	}`).
+- `SMART_ASSISTANT_BASE_URL`: Base URL for Smart Assistant RabbitMQ connection (default: `http://smartclide.ddns.net:5000/smartclide/v1/smartassistant`).
+- `RABBITMQ_HOST`: RabbitMQ connection string (default: `localhost`).
+- `RABBITMQ_MAPPINGS`: RabbitMQ mappings between queue and API's endpoint to connect to. (default: `{
+	    'acceptance_tests_queue': '{SMART_ASSISTANT_BASE_URL}/acceptance',
+	    'bpmn_item_recommendation_queue': '{SMART_ASSISTANT_BASE_URL}/bpmnitemrecommendation',
+	    'code_generation_queue': '{SMART_ASSISTANT_BASE_URL}/codegen',
+	    'code_repo_recommendation_queue': '{SMART_ASSISTANT_BASE_URL}/coderepo',
+	    'enviroment_queue': '{SMART_ASSISTANT_BASE_URL}/enviroment'
+	}`). Note: All of them are prefixed with `{SMART_ASSISTANT_BASE_URL}/` before start the connection.
 
 ## Run application
 

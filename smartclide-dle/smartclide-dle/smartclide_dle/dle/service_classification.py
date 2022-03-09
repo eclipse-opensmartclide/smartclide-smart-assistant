@@ -27,9 +27,6 @@ class ServiceClassification:
         categories = result['result'][0]['Service_class']
 
         categories = list(set([categories]))
-        categories = ['Other'] if not categories or (len(categories) == 1 and not categories[0]) else categories
+        categories = ['Generic Service'] if not categories or (len(categories) == 1 and not categories[0]) else categories
 
         return categories, method, service_id
-
-
-

@@ -13,6 +13,7 @@ DEBUG_MODE = True
 
 # DLE configuration
 DLE_BASE_URL = os.getenv('DLE_BASE_URL', 'http://smartclide.ddns.net:5001/smartclide/v1/dle') 
+SMART_ASSISTANT_BASE_URL = os.getenv('SMART_ASSISTANT_BASE_URL', 'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant') 
 
 # mongodb configuration
 MONGO_DB = os.getenv('SA_MONGODB_DB', 'smartclide-smart-assistant')
@@ -22,11 +23,9 @@ MONGO_URI = f'mongodb://{MONGO_IP}:{MONGO_PORT}/{MONGO_DB}'
 
 # rabbitmq configuration
 rabbitmq_host = os.getenv('RABBITMQ_HOST', 'localhost')
-rabbitmq_user = os.getenv('RABBITMQ_USER', '')
-rabbitmq_password = os.getenv('RABBITMQ_PASSWORD', '')
 channel_endpoint_mappings = os.getenv('RABBITMQ_MAPPINGS',  
 	{
-	k: f'http://smartclide.ddns.net:5000/smartclide/v1/smartassistant/{v}' 
+	k: f'{SMART_ASSISTANT_BASE_URL}/{v}' 
 	for k,v in {
 	    'acceptance_tests_queue': 'acceptance',
 	    'bpmn_item_recommendation_queue': 'bpmnitemrecommendation',
