@@ -22,8 +22,11 @@ class RabbitMQConsumer:
         message_handler: handler to receive the message and perform the treatment
     """
 
-    def __init__(self, host:str, queues:List[str] = None, message_handler:Callable = None) -> None:
+    def __init__(self, host:str, port:int, user:str, password:str, queues:List[str] = None, message_handler:Callable = None) -> None:
         self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
         self.queues = queues
         self.message_handler = message_handler
 
@@ -41,7 +44,8 @@ class RabbitMQConsumer:
             except Exception as e:
                 print(f'[rabbitmq] error on message routing: {e}')
 
-        connection_params = pika.ConnectionParameters(host=self.host)
+        credentials = pika.PlainCredentials(self.user, self.password)
+        connection_params = pika.ConnectionParameters(host=self.host, port=self.port, virtual_host='/', credentials=credentials)
         connection = pika.BlockingConnection(connection_params)
         channel = connection.channel()
 

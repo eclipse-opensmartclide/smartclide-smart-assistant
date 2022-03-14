@@ -30,7 +30,10 @@ The application configuration is set via enviroment variables:
 - `SA_MONGODB_DB`: MongoDB database to connect to (default: `smartclide-smart-assistant`).
 - `DLE_BASE_URL`: Base URL for DLE connection (default: `http://smartclide.ddns.net:5001/smartclide/v1/dle`).
 - `SMART_ASSISTANT_BASE_URL`: Base URL for Smart Assistant RabbitMQ connection (default: `http://smartclide.ddns.net:5000/smartclide/v1/smartassistant`).
-- `RABBITMQ_HOST`: RabbitMQ connection string (default: `localhost`).
+- `RABBITMQ_HOST`: RabbitMQ connection string host (default: `localhost`).
+- `RABBITMQ_PORT`: RabbitMQ connection string port (default: `5672`).
+- `RABBITMQ_USER`: RabbitMQ connection string user (default: `user`).
+- `RABBITMQ_PASSWORD`: RabbitMQ connection string password (default: `password`).
 - `RABBITMQ_MAPPINGS`: RabbitMQ mappings between queue and API's endpoint to connect to. (default: `{
 	    'acceptance_tests_queue': '{SMART_ASSISTANT_BASE_URL}/acceptance',
 	    'bpmn_item_recommendation_queue': '{SMART_ASSISTANT_BASE_URL}/bpmnitemrecommendation',

@@ -23,6 +23,9 @@ MONGO_URI = f'mongodb://{MONGO_IP}:{MONGO_PORT}/{MONGO_DB}'
 
 # rabbitmq configuration
 rabbitmq_host = os.getenv('RABBITMQ_HOST', 'localhost')
+rabbitmq_port = int(os.getenv('RABBITMQ_PORT', 5672))
+rabbitmq_user = os.getenv('RABBITMQ_USER', 'user')
+rabbitmq_password = os.getenv('RABBITMQ_PASSWORD', 'password')
 channel_endpoint_mappings = os.getenv('RABBITMQ_MAPPINGS',  
 	{
 	k: f'{SMART_ASSISTANT_BASE_URL}/{v}' 
