@@ -108,11 +108,13 @@ class TemplateCodegenEndpoint(Resource):
             bpmn_file = unquote(bpmn_file)
             bpmn_file = bpmn_file.replace('\n','')
             model = CodeTemplateGeneration()
-            code_generated = model.generate(bpmn_file)
+            code_generated = list(model.generate(bpmn_file))
         except xml.etree.ElementTree.ParseError:
             return handle400error(dle_ns, 'Malformed BPMN file, please check the XML syntax.')
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
+
+        print(code_generated)
 
         # format and return results
         result = {
@@ -156,11 +158,9 @@ class PredictiveModelToolAssistant(Resource):
         return result
 
 
+
 @dle_ns.route('/codegen')
 class CodeSuggestEndpoint(Resource):
-
-    def __init__(self):
-        self.model = CodeMarkovSuggest()
 
     @api.expect(codegen_model)
     @api.response(404, 'Data not found')
@@ -173,6 +173,8 @@ class CodeSuggestEndpoint(Resource):
         """
         Provides recommendations on what JAVA code to write based on machine learning techniques and markov chains.
         """
+
+        model = CodeMarkovSuggest()
 
         # retrieve arguments
         try:
@@ -192,7 +194,7 @@ class CodeSuggestEndpoint(Resource):
 
         # perform prediction
         try:
-            code, code_len, code_lines, method, lang = self.model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
+            code, code_len, code_lines, method, lang = model.predict(method, language, code_input, code_sugg_len, code_sugg_lines)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 

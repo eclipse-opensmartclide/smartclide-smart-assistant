@@ -26,6 +26,8 @@ The application configuration is set via enviroment variables:
 - `DLE_API_BIND`: Address to bind to (default: `0.0.0.0`).
 - `DLE_MONGODB_PORT`: MongoDB database to connect to (default:`27017`).
 - `DLE_MONGODB_HOST`: MongoDB database to connect to (default: `localhost`).
+- `DLE_MONGODB_USER`: MongoDB user to connect to db (default: `user`).
+- `DLE_MONGODB_PASSWROD`: MongoDB password to connect to db (default: `password`).
 - `DLE_MONGODB_DB`: MongoDB database to connect to (default: `smartclide-smart-assistant`).
 
 

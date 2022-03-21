@@ -12,7 +12,7 @@ from smartclide_service_classification_autocomplete import PredictServiceClassMo
 
 class ServiceClassification:
 
-    def __init__():
+    def __init__(self):
         self.service_classification = PredictServiceClassModel()
 
     def predict(self, service_id: str, service_name: str, service_description: str, method:str = 'Default') -> Tuple[List[str],str,str]:

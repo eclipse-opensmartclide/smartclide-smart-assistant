@@ -604,7 +604,7 @@ acceptance_prediction_model = api.model('AcceptacePrediction', {
 
 codegen_model = api.model('CodeGenRequest', {
     'code_input': fields.String(description="The code used as seed for the code generation", required=True, example='import android'),
-    'method': fields.String(description="Method used to generate the code", required=True, example='Default'),
+    'method': fields.String(description="Method used to generate the code", required=True, example='advanced'),
     'language': fields.String(description="Language within the code generation is made", required=True, example='java'),
     'code_sugg_len': fields.Integer(description="Suggested length of the code generation", required=True, example=4),
     'code_sugg_lines': fields.Integer(description="Suggested lines that must have the generated code", required=True, example=2)

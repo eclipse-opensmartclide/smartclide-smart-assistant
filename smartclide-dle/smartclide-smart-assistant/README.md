@@ -27,6 +27,8 @@ The application configuration is set via enviroment variables:
 - `SA_API_BIND`: Address to bind to (default: `0.0.0.0`).
 - `SA_MONGODB_PORT`: MongoDB database to connect to (default:`27017`).
 - `SA_MONGODB_HOST`: MongoDB database to connect to (default: `localhost`).
+- `SA_MONGODB_USER`: MongoDB user to connect to db (default: `user`).
+- `SA_MONGODB_PASSWROD`: MongoDB password to connect to db (default: `password`).
 - `SA_MONGODB_DB`: MongoDB database to connect to (default: `smartclide-smart-assistant`).
 - `DLE_BASE_URL`: Base URL for DLE connection (default: `http://smartclide.ddns.net:5001/smartclide/v1/dle`).
 - `SMART_ASSISTANT_BASE_URL`: Base URL for Smart Assistant RabbitMQ connection (default: `http://smartclide.ddns.net:5000/smartclide/v1/smartassistant`).

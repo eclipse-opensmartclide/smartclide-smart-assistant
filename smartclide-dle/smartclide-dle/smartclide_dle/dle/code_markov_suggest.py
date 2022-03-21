@@ -20,8 +20,6 @@ class CodeMarkovSuggest:
         result = self.model.generateCode(code_input, code_sugg_len, code_sugg_lines)
 
         # format results
-        code_suggestions = [result['result']['code_sugg1'], result['result']['code_sugg2']]
-
         code = result['result']['code_sugg']
         code_len = result['result']['codeSuggLen']
         code_lines = result['result']['codeSuggLines']

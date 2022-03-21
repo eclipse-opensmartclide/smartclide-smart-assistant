@@ -19,7 +19,9 @@ SMART_ASSISTANT_BASE_URL = os.getenv('SMART_ASSISTANT_BASE_URL', 'http://smartcl
 MONGO_DB = os.getenv('SA_MONGODB_DB', 'smartclide-smart-assistant')
 MONGO_IP = os.getenv('SA_MONGODB_HOST', 'localhost') 
 MONGO_PORT = os.getenv('SA_MONGODB_PORT', 27017)
-MONGO_URI = f'mongodb://{MONGO_IP}:{MONGO_PORT}/{MONGO_DB}'
+MONGO_USER = os.getenv('SA_MONGODB_USER', 'user') 
+MONGO_PASSWORD = os.getenv('SA_MONGODB_PASSWORD', 'password') 
+MONGO_URI = f'mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_IP}:{MONGO_PORT}/{MONGO_DB}'
 
 # rabbitmq configuration
 rabbitmq_host = os.getenv('RABBITMQ_HOST', 'localhost')
