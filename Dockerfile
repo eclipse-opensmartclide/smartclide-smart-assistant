@@ -1,4 +1,4 @@
-FROM ubuntu:latest 
+FROM ubuntu:20.04
 
 MAINTAINER AIR Institute "dabm@air-institute.org"
 
@@ -9,8 +9,6 @@ ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Main apt stuff
-RUN add-apt-repository universe
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \    
     python3.8-dev \
