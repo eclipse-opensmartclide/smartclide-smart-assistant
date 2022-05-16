@@ -1,0 +1,6 @@
+include *.csv *.pkl
+recursive-include  servcodegen/data *.csv 
+recursive-include  servcodegen/trained_models *.csv *.pt *.bin
+recursive-include  servcodegen/trained_models/bert_service_classifier *.json *.bin *.txt
+recursive-include  servcodegen/trained_models/api_distilGPT2 *.json *.bin *.txt
+
