@@ -12,6 +12,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \    
     python3.8-dev \
+    python3.8-distutils \
     python-dev \
     libpython3.8-dev \
     libevent-dev \
