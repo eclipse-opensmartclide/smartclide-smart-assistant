@@ -11,7 +11,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Main apt stuff
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    python \
     python3-dev \
     python3-pip \
     libssl-dev \
@@ -51,7 +50,7 @@ RUN cd smartclide-smart-assistant/smartclide-template-code-generation && \
 
 # smartclide-dle and smartclide-smart-assistant
 # install spacy and npl model
-RUN python3 -m pip install --no-cache-dir spacy==2.3.5 && \
+RUN python3 -m pip install --no-cache-dir spacy==2.4.0 && \
     python3 -m spacy download en_core_web_md
 
 # Install extra requirements for the smart-assistant
