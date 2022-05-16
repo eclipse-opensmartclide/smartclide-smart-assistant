@@ -10,10 +10,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Main apt stuff
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \    
-    python3-dev \
-    libpython3-dev \
-    python3-pip \
+    python3.8 \    
+    python3.8-dev \
+    libpython3.8-dev \
     libevent-dev \
     libssl-dev \
     libffi-dev \
@@ -29,9 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# get pip
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python3 get-pip.py
+
 # update pip
-RUN  python3 -m pip install --no-cache-dir -U pip
-RUN  python3 -m pip install --no-cache-dir cython
+RUN python3 -m pip install --no-cache-dir -U pip
+RUN python3 -m pip install --no-cache-dir cython
 
 # install spacy and npl model
 RUN python3 -m pip install --no-cache-dir setuptools wheel  && \
