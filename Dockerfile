@@ -12,6 +12,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \    
     python3.8-dev \
+    python-dev \
     libpython3.8-dev \
     libevent-dev \
     libssl-dev \
@@ -21,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     ca-certificates \
     build-essential \
+    wget \
     gcc \
     g++ \
     git \
@@ -38,7 +40,7 @@ RUN python3 -m pip install --no-cache-dir cython
 
 # install spacy and npl model
 RUN python3 -m pip install --no-cache-dir setuptools wheel  && \
-    python3 -m pip install --no-cache-dir spacy && \
+    python3 -m pip install --no-cache-dir spacy==2.3.5 && \
     python3 -m spacy download en_core_web_md
 
 # clone smartclide-smart-assistant
