@@ -1,0 +1,14 @@
+keras
+nlpaug
+nltk
+numpy
+pandas
+scipy
+torch
+wget
+scikit-learn
+transformers
+
+
+
+
