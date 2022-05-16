@@ -21,9 +21,13 @@ jobs:
       run: sudo python3 -m pip install . --upgrade
       working-directory: cbr-gherkin-recommendation
 
-    - name: install service classification and code autocomplete model
+    - name: install service serviceclassification
       run: sudo python3 -m pip install . --upgrade
-      working-directory: smartclide-service-classification-autocomplete
+      working-directory: serviceclassification
+
+    - name: install service codeautocomplete
+      run: sudo python3 -m pip install . --upgrade
+      working-directory: codeautocomplete
 
     - name: restart smartclide-dle
       run: sudo pm2 restart smartclide-smart-assistant smartclide-dle
