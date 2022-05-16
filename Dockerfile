@@ -50,7 +50,7 @@ RUN cd smartclide-smart-assistant/smartclide-template-code-generation && \
 
 # smartclide-dle and smartclide-smart-assistant
 # install spacy and npl model
-RUN python3 -m pip install--no-cache-dir setuptools wheel
+RUN python3 -m pip install--no-cache-dir setuptools wheel  && \
     python3 -m pip install --no-cache-dir spacy && \
     python3 -m spacy download en_core_web_md
 
