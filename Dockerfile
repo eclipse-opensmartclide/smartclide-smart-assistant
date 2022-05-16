@@ -10,10 +10,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Main apt stuff
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python2.7-dev \
+    python3 \    
     python3-dev \
+    libpython3-dev \
     python3-pip \
+    libevent-dev \
     libssl-dev \
     libffi-dev \
     libxml2-dev \
@@ -21,10 +22,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     ca-certificates \
     build-essential \
+    gcc \
+    g++ \
     git \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# update pip
+RUN  python3 -m pip install --no-cache-dir -U pip
+RUN  python3 -m pip install --no-cache-dir cython
+
+# install spacy and npl model
+RUN python3 -m pip install --no-cache-dir setuptools wheel  && \
+    python3 -m pip install --no-cache-dir spacy && \
+    python3 -m spacy download en_core_web_md
 
 # clone smartclide-smart-assistant
 RUN git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
@@ -50,11 +62,6 @@ RUN cd smartclide-smart-assistant/smartclide-template-code-generation && \
     python3 -m pip install . --upgrade
 
 # smartclide-dle and smartclide-smart-assistant
-# install spacy and npl model
-RUN python3 -m pip install --no-cache-dir setuptools wheel  && \
-    python3 -m pip install --no-cache-dir spacy && \
-    python3 -m spacy download en_core_web_md
-
 # Install extra requirements for the smart-assistant
 RUN python3 -m pip install tensorflow nlpaug sentence_transformers && \
     python3 -m pip install torch==1.5.1+cpu torchvision==0.6.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
