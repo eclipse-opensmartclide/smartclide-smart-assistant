@@ -29,6 +29,9 @@ ServiceClassification, CodeTemplateGeneration, BPMNItemRecommender
 dle_ns = api.namespace('dle', description='Provides the DLE funcionality (Deep Learning Engine) predictions')
 
 
+model_codegen = CodeMarkovSuggest()
+model_service_classification = ServiceClassification()
+
 @dle_ns.route('/serviceclassification')
 class ServiceClassificationEndpoint(Resource):
 
@@ -43,6 +46,10 @@ class ServiceClassificationEndpoint(Resource):
         """
         Provides recommendations on service classification.
         """
+
+        global model_service_classification
+
+        model = model_service_classification
 
         # retrieve arguments
         try:
@@ -60,7 +67,6 @@ class ServiceClassificationEndpoint(Resource):
 
         # perform prediction
         try:
-            model = ServiceClassification()
             categories, method, _ = model.predict(service_id, service_name, service_desc)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
@@ -114,8 +120,6 @@ class TemplateCodegenEndpoint(Resource):
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 
-        print(code_generated)
-
         # format and return results
         result = {
             'code': code_generated
@@ -158,7 +162,6 @@ class PredictiveModelToolAssistant(Resource):
         return result
 
 
-
 @dle_ns.route('/codegen')
 class CodeSuggestEndpoint(Resource):
 
@@ -171,10 +174,12 @@ class CodeSuggestEndpoint(Resource):
     @cache.cached(timeout=1, query_string=True)
     def post(self):
         """
-        Provides recommendations on what JAVA code to write based on machine learning techniques and markov chains.
+        Provides recommendations on what JAVA code to write based on machine learning techniques.
         """
 
-        model = CodeMarkovSuggest()
+        global model_codegen
+
+        model = model_codegen
 
         # retrieve arguments
         try:
@@ -401,7 +406,6 @@ class BPMNItemRecommendation(Resource):
             bpmn = bpmn.replace('\n','')
             model = BPMNItemRecommender()
             recommended_services = model.predict(bpmn)
-            print(recommended_services)
         except xml.etree.ElementTree.ParseError:
             return handle400error(dle_ns, 'Malformed BPMN file, please check the XML syntax.')
         except:

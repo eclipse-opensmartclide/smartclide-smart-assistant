@@ -6,7 +6,7 @@
 
 from typing import List, Tuple
 
-from smartclide_service_classification_autocomplete import AutocompleteCodeModel
+from servcodegen import AutocompleteCodeModel
 
 
 class CodeMarkovSuggest:
