@@ -11,7 +11,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Main apt stuff
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    python-dev \
     python3-dev \
     python3-pip \
     libssl-dev \
