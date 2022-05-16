@@ -34,8 +34,13 @@ RUN cd smartclide-smart-assistant/smartclide-dle-models/cbr-gherkin-recommendati
     python3 -m pip install --no-cache-dir -r requirements.txt && \
     python3 -m pip install . --upgrade
 
-# build smartclide-service-classification-autocomplete
-RUN cd smartclide-smart-assistant/smartclide-dle-models/smartclide-service-classification-autocomplete && \
+# build smartclide-service-classification
+RUN cd smartclide-smart-assistant/smartclide-dle-models/serviceclassification && \
+    python3 -m pip install --no-cache-dir -r requirements.txt && \
+    python3 -m pip install . --upgrade
+
+# build smartclide-service-autocomplete
+RUN cd smartclide-smart-assistant/smartclide-dle-models/codeautocomplete && \
     python3 -m pip install --no-cache-dir -r requirements.txt && \
     python3 -m pip install . --upgrade
 
