@@ -64,10 +64,14 @@ class ServiceClassificationEndpoint(Resource):
         service_id = obj['service_id'] 
         service_name = obj['service_name'] 
         service_desc = obj['service_desc']
+        ##TODO the below line is temp, we need to get method from user request
+        classify_method="Default"          #User can send "Default" or "Advanced" 
+        #classify_method = obj['method']
+
 
         # perform prediction
         try:
-            categories, method, _ = model.predict(service_id, service_name, service_desc)
+            categories, method, _ = model.predict(service_id, service_name, service_desc, classify_method)
         except:
             return handle500error(dle_ns, 'The DLE suffered an unexpected error, please retry in a few seconds.')
 
