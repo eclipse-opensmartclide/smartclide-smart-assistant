@@ -21,11 +21,12 @@ class ServiceClassification:
         result = self.service_classification.predict(service_name, service_description, method=method)
 
         # extract results
+        result=result['result'][0]
         method = result['Method']
         service_id = result['Service_id']
         categories = result['Service_class']
 
-        categories = list(set(categories))
+        #categories = list(set(categories))
         categories = ['Generic Service'] if not categories or (len(categories) == 1 and not categories[0]) else categories
 
         return categories, method, service_id
