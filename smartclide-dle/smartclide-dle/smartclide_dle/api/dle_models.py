@@ -606,16 +606,16 @@ codegen_model = api.model('CodeGenRequest', {
     'code_input': fields.String(description="The code used as seed for the code generation", required=True, example='import android'),
     'method': fields.String(description="Method used to generate the code", required=True, example='advanced'),
     'language': fields.String(description="Language within the code generation is made", required=True, example='java'),
-    'code_sugg_len': fields.Integer(description="Suggested length of the code generation", required=True, example=4),
+    'code_sugg_len': fields.Integer(description="Suggested length of the code generation", required=True, example=15),
     'code_sugg_lines': fields.Integer(description="Suggested lines that must have the generated code", required=True, example=2)
 }, description="The code generation recommendation input request")
 
 codegen_prediction_model = api.model('CodeGenPrediction', {
     'method': fields.String(description="Method used to generate the code", required=True, example='Default'),
     'language': fields.String(description="Language within the code generation is made", required=True, example='java'),
-    'code_suggestions': fields.List(fields.String(example='support v4 view View'), description="Generated lins of code", required=True),
+    'code_suggestions': fields.List(fields.String(example='import android.content.Intent'), description="Generated lins of code", required=True),
     'code_len': fields.Integer(description='Number of characters of generated code', example=10),
-    'code_lines': fields.Integer(description='Number of lines of generated code', example=10)
+    'code_lines': fields.Integer(description='Number of lines of generated code', example=2)
 }, description="The recommended gherkin for acceptance tests")
 
 
@@ -642,7 +642,8 @@ developer_prediction_model = api.model('DeveloperPrediction', {
 service_classification_model = api.model('ServiceClassificationRequest', {
     'service_id': fields.Integer(description="The id of the service to classify", required=True, example=34333),
     'service_name': fields.String(description="The name of the service to classify", required=True, example="TransLoc openAPI"),
-    'service_desc': fields.String(description="The description of the service to classify", required=True, example="The TransLoc OpenAPI is a public RESTful API which allows developers to access real-time vehicle tracking information and incorporate this data into their website or mobile application.")
+    'service_desc': fields.String(description="The description of the service to classify", required=True, example="The TransLoc OpenAPI is a public RESTful API which allows developers to access real-time vehicle tracking information and incorporate this data into their website or mobile application."),
+    'method': fields.String(description="Method used to classify", required=True, example="Default"),
 }, description="The service classification model recommendation input request")
 
 service_classification_prediction_model = api.model('ServiceClassificationPrediction', {

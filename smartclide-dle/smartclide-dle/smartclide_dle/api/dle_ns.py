@@ -58,16 +58,13 @@ class ServiceClassificationEndpoint(Resource):
             return handle400error(dle_ns, 'The providen arguments are not correct. Please, check the swagger documentation at /v1')
 
         # check arguments
-        if 'service_id' not in obj or 'service_name' not in obj or 'service_desc' not in obj:
+        if 'service_id' not in obj or 'service_name' not in obj or 'service_desc' not in obj or 'method' not in obj:
             return handle400error(dle_ns, 'Missing parameters')
 
         service_id = obj['service_id'] 
         service_name = obj['service_name'] 
         service_desc = obj['service_desc']
-        ##TODO the below line is temp, we need to get method from user request
-        classify_method="Default"          #User can send "Default" or "Advanced" 
-        #classify_method = obj['method']
-
+        classify_method = obj['method']
 
         # perform prediction
         try:
