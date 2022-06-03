@@ -68,9 +68,13 @@ The above class demonstrate using service classification interface class whuich 
 {'result': [{'Service_name': 'service name text', 'Method': 'Default', 'Service_id': None, 'Service_class': ['Mapping', '']}]}
 
 ```
-Note1: The advanced method will return the top 2 categories assigned to service metadata input. the format of output will be:
+✨Note ✨
+The advanced method will return the top 2 categories assigned to service metadata input. the format of output will be:
 
+```
+{'result': [{'Service_name': 'service name text', 'Method': 'Default', 'Service_id': None, 'Service_class': ['Mapping', 'Transportation']}]}
 
+```
 ### Singleton Classes Usage
 In SmartCLIDE, many tasks require to run in the background independently of the user interface (UI). AI Models is one of these tasks that need to serve requests in real-time and return results. Consequently, loading the AI model can be time-consuming due to late response. A strategy such as using singleton classes for loading the models can help minimize the application UI load, improve availability, and reduce interactive response times. 
 

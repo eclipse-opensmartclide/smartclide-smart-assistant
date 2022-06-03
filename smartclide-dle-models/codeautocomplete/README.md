@@ -42,9 +42,17 @@ python3 servcodegen/examples/generate_code.py
 
 In SmartCLIDE platform, These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
 
-#Usage
+# Usage
 
-This library provides two code generators that use language modeling, and after installation, the library can be used by importing the package. To have better performance, max_lenth specify max length line suggestion, the recommended value is between 15-20, and max_sugges_line specifies max line suggestion, the recommended value is between 1-3.
+This library provides code-generator which uses language modeling, and after installation, the library can be used by importing the package. The model predicts the next tokens based on user input; in order to have better results, the following recommendation need to be considered:
+
+
+- Max_sugges_line specifies max line suggestion; recommended value is between 1-3.
+- Max_lenth specifies max length line suggestion, and the recommended value is between 15-20
+- Use Singletone call for acceptable response time, which this method is explained in the next section.
+- Handling client requests need access to sufficient computing
+infrastructure. Therefore, it suggests calling code to autocomplete when the user uses "Tab" or "Dot." 
+
 
 ## Simple Usage
 ```
