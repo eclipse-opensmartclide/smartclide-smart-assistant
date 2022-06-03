@@ -21,7 +21,9 @@ class AutocompleteCodeModel():
     def generateCode(self, codeInput, codeSuggLen, codeSuggLines=1, method="Default", language="java"):
         error = ''
         generatedCodeList = ['']
-        
+
+        #remove input tail space to ignore wrong results
+        codeInput = codeInput.rstrip()
         
         if (self.cnf_models.code_generation_load_model=="Disabled"):
             result = {"Error": "The \"AIPipelineConfiguration\"  class is configured for not loading the code generator model; Please use \"Enabled\" for loading the model in the AIPipelineConfiguration file to use the code generator."}

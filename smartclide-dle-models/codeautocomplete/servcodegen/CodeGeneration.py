@@ -48,9 +48,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
     encoded_codes = [];
     ngram_codeList = []
     max_length_padding = 40
-    max_codeSuggLen=100
+    max_codeSuggLen=50
     predict_code_length = 2
-    max_line_return = 3
+    max_line_return = 5
     df = pd.DataFrame();
     generatedCodesList=[]
     custom_dataset_line = 2000
@@ -81,9 +81,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
                  batch_size=16,
                  seqx_length=0,
                  code_vocab_size=0,
-                 temperature_GPT=0.7,
-                 top_k_GPT=40,
-                 top_p_GPT=0.7,
+                 temperature_GPT=0.6,
+                 top_k_GPT=50,
+                 top_p_GPT=0.90,
                  repetition_penalty_GPT=1.0
                  ):
         if torch.cuda.is_available():
@@ -358,9 +358,12 @@ class CodeGenerationModel(AIPipelineConfiguration):
         output_sequences = self.generatorModel.generate(
             input_ids=encoded_prompt,
             max_length=self.predict_code_length,
-            num_beams=self.max_line_return,
-            no_repeat_ngram_size=2,
-            num_return_sequences=self.max_line_return,            
+            # num_beams=self.max_line_return,
+            do_sample=True,
+            top_k=self.top_k_GPT,
+            top_p=self.top_p_GPT,
+            temperature=self.temperature_GPT,
+            num_return_sequences=self.max_line_return
             )
 
         text = None
