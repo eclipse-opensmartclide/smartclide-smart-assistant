@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-MAINTAINER AIR Institute "dabm@air-institute.org"
+MAINTAINER AIR Institute "dberrocal@air-institute.com"
 
 WORKDIR /app
 
@@ -69,7 +69,7 @@ RUN cd smartclide-smart-assistant/smartclide-template-code-generation && \
 
 # smartclide-dle and smartclide-smart-assistant
 # Install extra requirements for the smart-assistant
-RUN python3.8 -m pip install tensorflow nlpaug sentence_transformers && \
+RUN python3.8 -m pip install tensorflow nlpaug sentence_transformers==0.3.7.2 && \
     python3.8 -m pip install torch==1.5.1+cpu torchvision==0.6.1+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
     python3.8 -m pip install git+https://github.com/Dih5/zadeh
 
