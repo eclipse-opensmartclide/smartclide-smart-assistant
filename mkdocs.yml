@@ -1,0 +1,5 @@
+site_name: SmartCLIDE Deep Learning Engine Component
+repo_url: https://github.com/eclipse-researchlabs/smartclide-smart-assistant
+
+nav:
+  - Smartclide-DLE: 'index.md'
