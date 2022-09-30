@@ -1,13 +1,10 @@
-keras
 nltk
 numpy
 pandas
 scikit-learn
 scipy
 seaborn
-wordcloud
 sentence-transformers
-tensorflow
 torch
 wget
 
