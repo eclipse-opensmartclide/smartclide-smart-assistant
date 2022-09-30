@@ -5,16 +5,14 @@ import os
 import csv
 import torch
 import logging
-import numpy as np
 import pandas as pd
-
 from .AIPipelineConfiguration import *
-
 from torch.utils.data import Dataset, DataLoader
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 
 MAX_LENGTH = int(10000)
 logger = logging.getLogger(__name__)
+
 
 # import warnings
 # warnings.filterwarnings("error")
@@ -43,24 +41,19 @@ class CodesDataset(Dataset):
 
 class CodeGenerationModel(AIPipelineConfiguration):
     seed_text = ''
-    generator_model = None
     tokenizer = None
-    encoded_codes = [];
-    ngram_codeList = []
-    max_length_padding = 40
-    max_codeSuggLen=50
-    predict_code_length = 2
-    max_line_return = 5
-    df = pd.DataFrame();
-    generatedCodesList=[]
+    max_codeSuggLen = 40
+    predict_code_length = 3
+    max_line_return = 4
+    df = pd.DataFrame()
+    generatedCodesList = []
     custom_dataset_line = 2000
-    padded_code_ngram_sequences = []
     transformer_model_name = 'gpt2'
     stop_token = '<|endoftext|>'
     trained_model = 'gpt2_codegenerator_trained.pt'
-    spechialtokens=['<|endoftext|>']
-    trained_model_distilGPT2 = 'api_distilGPT2'
-    trained_model_distilGPT2_folder = 'api_distilGPT2/'
+    spechialtokens = ['<|endoftext|>']
+    trained_model_distilGPT2 = 'api_distilGPT2_denoise'
+    trained_model_distilGPT2_folder = 'api_distilGPT2_denoise/'
 
     codeLoder = []
     max_seqlen = 200
@@ -75,19 +68,18 @@ class CodeGenerationModel(AIPipelineConfiguration):
 
     def __init__(self, use_saved_model=True,
                  default_dataset_name='',
-                 device='cpu',
-                 code_line_column='codes',
                  epochs=3,
                  batch_size=16,
                  seqx_length=0,
                  code_vocab_size=0,
                  temperature_GPT=0.6,
                  top_k_GPT=50,
-                 top_p_GPT=0.90,
+                 top_p_GPT=0.85,
                  repetition_penalty_GPT=1.0
                  ):
         if torch.cuda.is_available():
             self.device = 'cuda'
+            self.device = 'cpu'
         else:
             self.device = 'cpu'
 
@@ -148,10 +140,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
         return isfile
 
     def loadDataset(self):
-        code_dataset_path=self.getDataDirectory()+self.defaultCodeTrainDataset
+        code_dataset_path = self.getDataDirectory() + self.defaultCodeTrainDataset
         self.codeLoder = DataLoader(CodesDataset(code_dataset_path), batch_size=1, shuffle=False)
         return self.codeLoder
-
 
     def trainGenerator(self, model_type=""):
 
@@ -176,7 +167,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
         sum_loss = 0.0
         batch_count = 0
         tmp_codes_tens = None
-        models_folder =  self.getTrainedModelsDirectory()
+        models_folder = self.getTrainedModelsDirectory()
         if not os.path.exists(models_folder):
             os.mkdir(models_folder)
 
@@ -225,27 +216,21 @@ class CodeGenerationModel(AIPipelineConfiguration):
         # Store the model after each epoch to compare the performance of them
         torch.save(model_class.state_dict(), os.path.join(models_folder, f"gpt2_codegenerator_trained.pt"))
 
-
     def getTrainedModel_distilGPT2(self):
         """
         Function inorder to return deafult transformer model
-        :param clmName: string param specifies trained model name   
+        :param clmName: string param specifies trained model name
         """
         return (self.trained_model_distilGPT2)
-
 
     def loadTrainedGenerator(self):
         """
         Load trained web service code generator
         """
-        import pickle
-        import torch
-        from transformers import pipeline
 
         trained_models_folder = self.getTrainedModelsDirectory()
         trained_models_files = self.getTrainedModel_distilGPT2()
         model_path = os.path.join(trained_models_folder, trained_models_files)
-
 
         # print(trained_models_folder)
         # print(model_path)
@@ -254,12 +239,13 @@ class CodeGenerationModel(AIPipelineConfiguration):
             logger.error("No trained model file is exist.")
             print("No trained model file is exist.")
             print("+" * 40)
-            self.generatorModel=None
+            self.generatorModel = None
             return (self.generatorModel)
 
         try:
-            self.tokenizer_class = GPT2Tokenizer.from_pretrained(model_path)
-            self.generatorModel = GPT2LMHeadModel.from_pretrained(model_path, pad_token_id=self.tokenizer_class.eos_token_id)
+            self.tokenizer_class = GPT2Tokenizer.from_pretrained('gpt2')
+            self.generatorModel = GPT2LMHeadModel.from_pretrained(model_path,
+                                                                  pad_token_id=self.tokenizer_class.eos_token_id)
 
             # self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModelName())
             # self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModelName())
@@ -269,77 +255,34 @@ class CodeGenerationModel(AIPipelineConfiguration):
             print("+" * 40)
 
         except FileNotFoundError:
-            self.generatorModel=None# as deafult GPT will run which we dont need its result
+            self.generatorModel = None  # as deafult GPT will run which we dont need its result
             print("+" * 40)
             print("There is a problem with correctly loading a trained model.")
             print("+" * 40)
 
         return (self.generatorModel)
 
-    # def loadTrainedGenerator(self):
-    #     """
-    #     Load trained web service code generator
-    #     """
-    #     import pickle
-    #     import torch
-    #     from transformers import pipeline
-
-    #     trained_models_folder = self.getTrainedModelsDirectory()
-    #     model_path = os.path.join(trained_models_folder, "/api_gpt2distilbert")
-    #     print(model_path)
-    #     if not (os.path.exists(model_path)):
-    #         print("+" * 40)
-    #         logger.error("No trained model file is exist.")
-    #         print("No trained model file is exist.")
-    #         print("+" * 40)
-    #         self.generatorModel=None
-    #         return (self.generatorModel)
-
-    #     try:
-    #         self.tokenizer_class = GPT2Tokenizer.from_pretrained(model_path)
-    #         self.generatorModel = GPT2LMHeadModel.from_pretrained(model_path)
-
-    #         # self.tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModelName())
-    #         # self.generatorModel = GPT2LMHeadModel.from_pretrained(self.getTransformerModelName())
-    #         # self.generatorModel.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-    #         print("+" * 40)
-    #         print("Trained model is loaded on " + self.device)
-    #         print("+" * 40)
-
-    #     except FileNotFoundError:
-    #         self.generatorModel=None# as deafult GPT will run which we dont need its result
-    #         print("+" * 40)
-    #         print("There is a problem with correctly loading a trained model.")
-    #         print("+" * 40)
-
-    #     return (self.generatorModel)
-
-
     def input_validation(self, seed_text, lengthCodeLine, max_line_return):
         import re
         result = {
-            "code_input_error": False,            
+            "code_input_error": False,
             "codeSuggLen_error": False,
             "codeSuggLines_error": False,
         }
 
-              
-        if len(seed_text) < 1 and len(seed_text)> 200 :
-            result[ "code_input_error"]=True
-            logging.info("The models need input between 1-"+str(self.max_codeSuggLen)+" character ")
+        if len(seed_text) < 1 and len(seed_text) > 200:
+            result["code_input_error"] = True
+            logging.info("The models need input between 1-" + str(self.max_codeSuggLen) + " character ")
 
         if int(max_line_return) > self.max_line_return:
-            result[ "codeSuggLines_error"]=True
-            logging.info("The max_line parameter must be between 1-"+str(self.max_line_return))
+            result["codeSuggLines_error"] = True
+            logging.info("The max_line parameter must be between 1-" + str(self.max_line_return))
 
         if int(lengthCodeLine) > self.max_codeSuggLen:
-            result[ "codeSuggLen_error"]=True
-            logging.info("The codeSuggLen parameter must be between 2-"+str(self.max_codeSuggLen))
- 
-        return result 
+            result["codeSuggLen_error"] = True
+            logging.info("The codeSuggLen parameter must be between 2-" + str(self.max_codeSuggLen))
 
-
-
+        return result
 
     def generate_code_trainedGPT2(self, seed_text, lengthCodeLine, max_line_return):
 
@@ -347,7 +290,7 @@ class CodeGenerationModel(AIPipelineConfiguration):
             Generate code using trained  web service code generator
             with optional lengthCodeLine and max_line_return
         """
-        self.generatedCodesList=[]
+        self.generatedCodesList = []
         self.seed_text = seed_text
         self.predict_code_length = lengthCodeLine
         self.max_line_return = max_line_return
@@ -363,18 +306,18 @@ class CodeGenerationModel(AIPipelineConfiguration):
             top_k=self.top_k_GPT,
             top_p=self.top_p_GPT,
             temperature=self.temperature_GPT,
-            num_return_sequences=self.max_line_return
-            )
+            num_return_sequences=self.max_line_return,
+        )
 
         text = None
         for output in output_sequences:
             generated_sequence = output.tolist()
-            code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True, skip_special_tokens=True)
+            code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True,
+                                                    skip_special_tokens=True)
             code_line = code_line[: code_line.find(self.stop_token) if self.stop_token == 1 else None]
             self.generatedCodesList.append(self.post_process_code(code_line))
             self.generatedCodesList = list(dict.fromkeys(self.generatedCodesList))
         return self.generatedCodesList
-
 
     def post_process_code(self, code):
         import re
@@ -386,168 +329,14 @@ class CodeGenerationModel(AIPipelineConfiguration):
         #     self.stop_token = ";"
 
         if len(code) > 2:
-            code_post_process=code.replace(". ", ".")
+            code_post_process = code.replace(". ", ".")
             return code_post_process
 
-        return code 
+        return code
 
         # if len(code_line)  > 2:
         #     code_post_process = code_line.replace("<STRING>", '""')
         #     return code_post_process
         # else:
         #     return code_line
-        # return code 
-
-    # LSTM Model
-    def installPackage(self,package):
-        from servcodegen import install_pack
-        install_pack(package)
-
-    def loadGenerator(self):
-        import os
-        import pickle
-        from transformers import pipeline
-        if (self.IsTrainedModelExist('GPTgenerator.pkl')):
-            file = open(self.getTrainedModel('GPTgenerator.pkl'), 'rb')
-            self.generatorModel = pickle.load(file)
-            file.close()
-        else:
-            self.generatorModel = pipeline('text-generation', model='gpt2')
-            pickle.dump(self.generatorModel,
-                        open(os.path.join(self.getTrainedModelsDirectory(), "GPTgenerator.pkl"), 'wb'))
-
-        return (self.generatorModel)
-
-    def loadSavedModel(self):
-        import os
-        here = os.path.abspath(os.path.dirname(__file__))
-        isfile = os.path.exists(os.path.join(here + "/trained_models/LSTM_code_generation_model/", 'saved_model.pb'))
-        if isfile:
-            self.modelLSTM = tensorflow.keras.models.load_model(
-                os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
-            return True
-        return False
-
-    def LoadCodeCorpos(self, ClmName):
-        self.X = list(set(self.df[ClmName]))
-        return self.X
-
-    def GenerateCode(self, codeInput, maxLength):
-        if (self.generatorModel != None):
-            generated_code_arr = self.generatorModel(codeInput, max_length=maxLength, do_sample=True, temperature=0.9)
-            generatedCode = generated_code_arr[0]['generated_text']
-            return (generatedCode)
-
-    def codeToRawCodeList(self):
-        self.rawCodeList = self.df[self.code_line_column].tolist()
-        return (self.rawCodeList)
-
-    def generate_code(self, seed_text, n_lines):
-        self.installPackage('tensorflow')
-        self.installPackage('keras')
-        self.loadCodeData()
-        self.codeToRawCodeList()
-        self.tokenizeCodes()
-        self.encodedWordsCount()
-        self.provideNgramSequences()
-        self.nGramcodeSeqPadding()
-        self.provideModelInputOutPut()
-        # load saved model
-        if self.use_saved_model == True:
-            self.loadSavedModel()
-        else:
-            self.TrainLSTMModel()
-
-        predictionList = []
-        seq_length = self.seqx_length
-        for i in range(n_lines):
-            text = []
-            for _ in range(self.predict_code_length):
-                encoded = self.token.texts_to_sequences([seed_text])
-                encoded = pad_sequences(encoded, maxlen=seq_length, padding='pre')
-                y_pred = np.argmax(self.modelLSTM.predict(encoded), axis=1)
-                # find to word dictinary which word mapped number
-                predicted_code = ""
-                for word, index in self.token.word_index.items():
-                    if index == y_pred:
-                        predicted_code = word
-                        break
-                seed_text = seed_text + ' ' + predicted_code
-                text.append(predicted_code)
-
-            seed_text = text[-1]
-            text = ' '.join(text)
-            print(text)
-            predictionList.append(text)
-
-        return predictionList
-
-    def getTotalWords(self):
-        return len(" ".join(self.rawCodeList))
-
-    def getWordFrequencyCounts(self):
-        self.tokenizeCodes()
-        self.encodeWords()
-        return len(" ".join(self.rawCodeList))
-
-    def totalWords(self):
-        return len(" ".join(self.rowcodeList))
-
-    def tokenizeCodes(self):
-        self.token.fit_on_texts(self.rawCodeList)
-        self.encoded_codes = self.token.texts_to_sequences(self.rawCodeList)
-        return self.encoded_codes
-
-    def encodedWordsCount(self):
-        self.tokenizeCodes();
-        word_counts = self.token.word_counts
-        return word_counts
-
-    def encodedWordsIndex(self):
-        self.tokenizeCodes();
-        word_index = self.token.word_index
-        return word_index
-
-    def getAllCodesWordSize(self):
-        vocabSize = len(self.token.word_counts) + 1
-        return vocabSize
-
-    # break each line as ngram
-    def provideNgramSequences(self):
-        ngram_codeList = []
-
-        for d in self.encoded_codes:
-            if len(d) > 1:
-                for i in range(2, len(d)):
-                    ngram_codeList.append(d[:i])
-        #                     print (d[:i])
-        self.ngram_codeList = ngram_codeList
-        return ngram_codeList;
-
-    # provide padding input for ML or DL algorithms
-    def nGramcodeSeqPadding(self):
-        self.padded_code_ngram_sequences = pad_sequences(self.ngram_codeList, maxlen=self.max_length_padding, padding="pre")
-        return self.padded_code_ngram_sequences
-
-    def provideModelInputOutPut(self):
-        self.X = self.padded_code_ngram_sequences[:, :-1]
-        self.y = self.padded_code_ngram_sequences[:, -1]
-        # categorize y
-        self.code_vocab_size = self.getAllCodesWordSize()
-        self.y = to_categorical(self.y, num_classes=self.code_vocab_size)
-        # X shape
-        self.seqx_length = self.X.shape[1]
-
-    def TrainLSTMModel(self):
-
-        self.modelLSTM = Sequential()
-        self.modelLSTM.add(Embedding(self.code_vocab_size, 50, input_length=self.seqx_length))
-        self.modelLSTM.add(LSTM(100, return_sequences=True))
-        self.modelLSTM.add(LSTM(100))
-        self.modelLSTM.add(Dense(100, activation="relu"))
-        self.modelLSTM.add(Dense(self.code_vocab_size, activation="softmax"))
-        # self.modelLSTM.summary()
-        self.modelLSTM.compile(loss='categorical_crossentropy', optimizer='adam', metrics=["accuracy"])
-        self.modelLSTM.fit(self.X, self.y, batch_size=self.batch_size, epochs=self.epochs)
-        here = os.path.abspath(os.path.dirname(__file__))
-        self.modelLSTM.save(os.path.join(here + "/trained_models/", 'LSTM_code_generation_model'))
+        # return code

@@ -1,0 +1,13 @@
+{
+  "additional_special_tokens": [
+    "<STR_URL>",
+    "<STR_TOKEN>",
+    "<CHAR_LIT>",
+    "<STR_LIT>",
+    "<INT_LIT>"
+  ],
+  "bos_token": "<|endoftext|>",
+  "eos_token": "<|endoftext|>",
+  "pad_token": "[PAD]",
+  "unk_token": "<|endoftext|>"
+}

@@ -52,8 +52,9 @@ class DownloadFile():
         self.s3_bucket_url = 'https://smartclide.s3.eu-central-1.amazonaws.com/'
         self.codeGenObj = CodeGenerationModel()
         self.code_generator_url = self.s3_bucket_url + self.codeGenObj.trained_model
-        self.distilGPT2_code_generator_url = self.s3_bucket_url + 'distilGPT2/pytorch_model.bin'
-  
+        # self.distilGPT2_code_generator_url = self.s3_bucket_url + 'distilGPT2/pytorch_model.bin'
+        self.distilGPT2_code_generator_url = 'https://smartclidetemp.s3.eu-central-1.amazonaws.com/pytorch_model.bin'
+
     def download_object(self, url, out_dir, model_name):
         '''
         Download objects from url 
