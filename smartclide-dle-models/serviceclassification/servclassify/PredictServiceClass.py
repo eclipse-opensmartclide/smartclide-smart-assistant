@@ -53,7 +53,7 @@ class PredictServiceClassModel():
 
             if method == 'Default':
                 #return a top predicted service category
-                serviceObjML = ServiceClassificationModel(True, 'Description', 'Category')
+                serviceObjML = ServiceClassificationModel(True, 'text', 'category')
                 serviceClasses = serviceObjML.predictBOWML(serviceDesc)
 
             if method == 'Advanced':

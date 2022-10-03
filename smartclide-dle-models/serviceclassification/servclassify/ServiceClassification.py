@@ -21,23 +21,21 @@ import servclassify
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-
-
 class ServiceClassificationModel(AIPipelineConfiguration):
     """
     This class is part of backend section of SmartCLIDE which include  training and prediction  using
     text classification models including ML and DL approches 
     """
-    
+
     X = []
     y = []
-    device='cpu'
+    device = 'cpu'
     model = None
     learner = None
     predictor = None
     lbMapped = None
     testDF = None
-    max_len=128
+    max_len = 128
     trainDF = None
     tokenizer = None
     testLabels = None
@@ -46,26 +44,25 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     trainFeatures = None
     maxLenEmbedding = 80
     rawCodeList = [];
-    tokenizer_class = None 
-    classifier_model = None 
+    tokenizer_class = None
+    classifier_model = None
     transformer_model_name = 'bert-base-uncased'
     trained_model_name = f'bert_service_classifier'
     trained_model_folder = 'bert_service_classifier/'
-    method = ['Default', 'BSVM','Advanced']
+    svm_model_name = 'service_classification_svm.pkl'
+    method = ['Default', 'BSVM', 'Advanced']
 
-
-    
     def __init__(self, useSavedModel=True,
-                 targetCLMName='Description',
-                 classCLMName='Category',
+                 targetCLMName='text',
+                 classCLMName='category',
                  defaultServiceDataset='',
                  defaultServiceTrainDataset='',
                  defaultServiceTestDataset=''
                  ):
         """
-        :param useSavedModel:               bool param specify using existing model .pkl or retrain  
-        :param targetCLMName:               string param specifies target colmn  
-        :param classCLMName:                string param specifies class colmn 
+        :param useSavedModel:               bool param specify using existing model .pkl or retrain
+        :param targetCLMName:               string param specifies target colmn
+        :param classCLMName:                string param specifies class colmn
         :param defaultServiceDataset:       string param specifies default service dataset file
         :param defaultServiceTrainDataset:  string param specifies default service train dataset file
         :param defaultServiceTestDataset:   string param specifies default service test dataset file
@@ -87,11 +84,9 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             self.device = 'cuda'
         else:
             self.device = 'cpu'
-            
-        self.textPreProcessOBJ= TextDataPreProcess()  
 
-            
-                     
+        self.textPreProcessOBJ = TextDataPreProcess()
+
     def loadData(self, path=''):
         """
         :param path: path text that the model uses as a deafualt target dataset
@@ -99,23 +94,26 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         """
         if (path == ''):
             currentPath = os.path.abspath(os.path.dirname(__file__))
-            self.df = pd.read_csv(os.path.join(currentPath, (self.defaultDatasetsFolder +'/'+self.defaultServiceDataset)))
-            self.trainDF = pd.read_csv(os.path.join(currentPath, (self.defaultDatasetsFolder +'/'+self.defaultServiceTrainDataset)))
-            self.testDF = pd.read_csv(os.path.join(currentPath, (self.defaultDatasetsFolder +'/'+self.defaultServiceTestDataset)))
+            self.df = pd.read_csv(
+                os.path.join(currentPath, (self.defaultDatasetsFolder + '/' + self.defaultServiceDataset)))
+            self.trainDF = pd.read_csv(
+                os.path.join(currentPath, (self.defaultDatasetsFolder + '/' + self.defaultServiceTrainDataset)))
+            self.testDF = pd.read_csv(
+                os.path.join(currentPath, (self.defaultDatasetsFolder + '/' + self.defaultServiceTestDataset)))
         self.df = self.df.loc[:, ~self.df.columns.str.contains('^Unnamed')]
         return self.df
 
     def getCurrentDirectory(self):
         """
-        returns current working directory of a process 
+        returns current working directory of a process
         :return: string param specifies working directory
         """
         path = os.getcwd()
         return (path)
-    
+
     def getParentDirectory(self):
         """
-        returns current working directory parrent 
+        returns current working directory parrent
         :return: string param specifies working directory parrent path
         """
         path = os.getcwd()
@@ -132,7 +130,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def getTrainedModel(self, modelName):
         """
-        returns default training models path 
+        returns default training models path
         :return: string param specifies training models path
         """
         TrainrdModelPath = self.getTrainedModelsDirectory()
@@ -142,7 +140,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     def IsTrainedModelExist(self, modelName):
         """
         Ensure trained model file is exist
-        :return: bool param 
+        :return: bool param
         """
         TrainrdModelPath = self.getTrainedModelsDirectory()
         isfile = os.path.exists(TrainrdModelPath + '/' + modelName)
@@ -150,8 +148,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def removeHTMLTags(self, clmName):
         """
-        Preprocess function inorder to clean HTML tags from service metadata 
-        :param clmName: string param specifies target colmn  
+        Preprocess function inorder to clean HTML tags from service metadata
+        :param clmName: string param specifies target colmn
         """
         textPreProcessOBJ = TextDataPreProcess()
         self.df[clmName] = self.df[clmName].astype(str).apply(textPreProcessOBJ.removeHTMLTags)
@@ -159,16 +157,16 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def removeNullrows(self, clmName):
         """
-        Preprocess function inorder to clean Null value from service metadata 
-        :param clmName: string param specifies target colmn  
+        Preprocess function inorder to clean Null value from service metadata
+        :param clmName: string param specifies target colmn
         """
         self.df = self.df[pd.notnull(self.df[clmName])]
         return (self.df)
 
     def cleanPunc(self, clmName):
         """
-        Preprocess function inorder to clean spechial character from service metadata 
-        :param clmName: string param specifies target colmn  
+        Preprocess function inorder to clean spechial character from service metadata
+        :param clmName: string param specifies target colmn
         """
         textPreProcessOBJ = TextDataPreProcess()
         self.df[clmName] = self.df[clmName].astype(str).apply(textPreProcessOBJ.cleanPunc)
@@ -176,8 +174,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def removeStopWords(self, clmName):
         """
-        Preprocess function inorder to clean EN stop words from service metadata 
-        :param clmName: string param specifies target colmn  
+        Preprocess function inorder to clean EN stop words from service metadata
+        :param clmName: string param specifies target colmn
         """
         textPreProcessOBJ = TextDataPreProcess()
         self.df[clmName] = self.df[clmName].apply(textPreProcessOBJ.removeStopWords)
@@ -186,7 +184,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     def removeDuplicates(self, clmName):
         """
         Preprocess function inorder to remove Duplicate gathered service data
-        :param clmName: string param specifies target colmn  
+        :param clmName: string param specifies target colmn
         """
         textPreProcessOBJ = TextDataPreProcess()
         self.df[clmName] = self.df[clmName].astype(str).apply(textPreProcessOBJ.uniqueList)
@@ -194,8 +192,8 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def tokenize(self, clmName):
         """
-        Preprocess function inorder to tokenizer service metadata text 
-        :param clmName: string param specifies target colmn  
+        Preprocess function inorder to tokenizer service metadata text
+        :param clmName: string param specifies target colmn
         """
         tokenizer = RegexpTokenizer(r'\w+')
         self.df[clmName] = self.df[clmName].apply(lambda x: tokenizer.tokenize(x))
@@ -203,19 +201,19 @@ class ServiceClassificationModel(AIPipelineConfiguration):
 
     def wordLemmatizer(self, clmName=''):
         """
-        Preprocess function inorder to ldmmatization, Lemmatization is the process of grouping together 
+        Preprocess function inorder to ldmmatization, Lemmatization is the process of grouping together
         the different inflected forms of a word
-        :param clmName: string param specifies target colmn  
+        :param clmName: string param specifies target colmn
         """
         if clmName == '':
-            clmName = 'description'
+            clmName = 'text'
         self.df[clmName] = self.df[clmName].apply(self.textPreProcessOBJ.wordLemmatizer)
         return (self.df)
 
     def getCommonWord(self, clmName, n=50):
         """
         Preprocess function inorder to remove common and most frequent words in gathered service data
-        :param clmName: string param specifies target colmn  
+        :param clmName: string param specifies target colmn
         """
         from sklearn.feature_extraction.text import CountVectorizer
         countVectorizerOBJ = CountVectorizer()
@@ -226,35 +224,33 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     def removeCommonWords(self, clmName, n=50):
         """
         Preprocess function inorder to remove common on data frame
-        :param clmName: string param specifies target colmn  
+        :param clmName: string param specifies target colmn
         """
         commonwords = self.getCommonWord(clmName, n)
         pat = r'\b(?:{})\b'.format('|'.join(commonwords))
         self.df[clmName] = self.df[clmName].str.replace(pat, '', regex=True)
-        
+
     def lowercase(self, clmName):
         """
         Preprocess function inorder to lowercase data frame
-        :param clmName: string param specifies target colmn  
+        :param clmName: string param specifies target colmn
         """
         self.df[clmName] = self.df[clmName].str.lower()
-        
+
     def getTransformerModelName(self):
         """
         Function inorder to return deafult transformer model
-        :param clmName: string param specifies transformer   
+        :param clmName: string param specifies transformer
         """
         return (self.transformer_model_name)
-    
 
     def getTrainedModelName(self):
         """
         Function inorder to return deafult transformer model
-        :param clmName: string param specifies trained model name   
+        :param clmName: string param specifies trained model name
         """
         return (self.trained_model_name)
-    
-    
+
     def ValidateTextInput(self, txtInput):
         """
         Input validation for user text input including service name and service Description
@@ -263,13 +259,12 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         if not isinstance(text, str):
             raise ValueError("The text input must be a string")
         if not text:
-            raise ValueError("The text input must have at least one character")  
-            
-    
+            raise ValueError("The text input must have at least one character")
+
     def loadTrainedClassifier(self):
-        """ 
+        """
         Load trained web service classifier
-        :return: trained model obj 
+        :return: trained model obj
         """
         import pickle
         from transformers import BertForSequenceClassification, AdamW, BertConfig
@@ -279,24 +274,24 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             trained_models_folder = self.getTrainedModelsDirectory()
             trained_models_files = self.getTrainedModelName()
             model_path = os.path.join(trained_models_folder, trained_models_files)
-            
-            self.classifier_model  = BertForSequenceClassification.from_pretrained(model_path)
-            self.tokenizer_class  = BertTokenizer.from_pretrained(model_path)
-            
-            print("+"*40)
-            print("Trained model is loaded on "+self.device)
-            print("+"*40)
+
+            self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
+            self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
+
+            print("+" * 40)
+            print("Trained model is loaded on " + self.device)
+            print("+" * 40)
 
         except FileNotFoundError:
-            print("+"*40)
+            print("+" * 40)
             print("No training file is exist GPT2-2-2")
-            print("+"*40)
+            print("+" * 40)
 
         return (self.classifier_model)
 
     def preprocessServicesData(self, clmName, actions=[]):
-        """ 
-        Preprocess gathered service data for SVM model 
+        """
+        Preprocess gathered service data for SVM model
         :return: preprocessed df
         """
         if ("lower" in actions):
@@ -309,13 +304,12 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         self.removeHTMLTags(clmName)
         self.getCommonWord(clmName, 60)
         self.removeCommonWords(clmName)
-        
+
         return self.df
 
-
     def TrainLinerSVCModel(self):
-        """ 
-        Train preprocessed data using SVM 
+        """
+        Train preprocessed data using SVM
         """
         self.preprocessServicesData(self.targetCLMName)
         self.X = self.trainDF[self.targetCLMName]
@@ -330,12 +324,12 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         self.model.fit(self.X, self.y)
         # save models
         packagePath = os.path.abspath(os.path.dirname(__file__))
-        result=pickle.dump(self.model,
-                    open(os.path.join(packagePath + "/trained_models/", "service_classification_bow_svc.pkl"), 'wb'))
+        result = pickle.dump(self.model,
+                             open(os.path.join(packagePath + "/trained_models/", self.svm_model_name), 'wb'))
 
     def predictBOWML(self, x):
-        """ 
-        Predict service class based on user input text and ML trained model 
+        """
+        Predict service class based on user input text and ML trained model
         :return: preprocessed df
         """
         x = x.lower()
@@ -344,7 +338,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         if (len(x) < 2):
             return False
 
-        if (self.IsTrainedModelExist('service_classification_bow_svc.pkl')):
+        if (self.IsTrainedModelExist(self.svm_model_name)):
             try:
                 self.loadSavedModel("BOWML")
             except ValueError:
@@ -354,15 +348,14 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             self.TrainLinerSVCModel()
 
         pred = self.model.predict([x])
-        f_class_=pred[0]
-        s_class_=''
-        classes=[f_class_,s_class_]
+        f_class_ = pred[0]
+        s_class_ = ''
+        classes = [f_class_, s_class_]
         return classes
-    
-    
-    def get_prediction(self,text,k=2):
-        """ 
-        Predict service class based on user input text and DL trained model 
+
+    def get_prediction(self, text, k=2):
+        """
+        Predict service class based on user input text and DL trained model
         :return: string param specifies service class
         """
         # prepare our text into tokenized sequence
@@ -370,48 +363,47 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         # perform inference to our model
         outputs = self.classifier_model(**inputs)
         probs = outputs[0].softmax(1)
-        top_tensors=torch.topk(probs.flatten(), 2).indices
-        first_cat_int=top_tensors[0].item()
+        top_tensors = torch.topk(probs.flatten(), 2).indices
+        first_cat_int = top_tensors[0].item()
         # print("*"*50)
         # print(first_cat_int)
         currentPath = os.path.abspath(os.path.dirname(__file__))
-        df_save=pd.read_csv(os.path.join(currentPath, "data/df_save.csv") )
-        f_class_=df_save.loc[df_save['Category'] == first_cat_int]["label"].values[0]
+        df_save = pd.read_csv(os.path.join(currentPath, "data/df_save.csv"))
+        f_class_ = df_save.loc[df_save['category'] == first_cat_int]["label"].values[0]
         # print("+"*50)
         # print(f_class_)
-        sec_cat_int=top_tensors[1].item()
-        s_class_=df_save.loc[df_save['Category'] == sec_cat_int]["label"].values[0]
+        sec_cat_int = top_tensors[1].item()
+        s_class_ = df_save.loc[df_save['category'] == sec_cat_int]["label"].values[0]
 
-        classes=[f_class_,s_class_]
+        classes = [f_class_, s_class_]
         return classes
 
     import sys
 
-    def install(self,package):
+    def install(self, package):
         import subprocess
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-        
 
     def loadSavedModel(self, modelName):
-        """ 
-        Load Saved ML models 
-        :return: bool 
+        """
+        Load Saved ML models
+        :return: bool
         """
         import os, sys
         sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
         path = self.getTrainedModelsDirectory()
         if modelName == 'BOWML':
-            isfile = os.path.exists(os.path.join(path, 'service_classification_bow_svc.pkl'))
+            isfile = os.path.exists(os.path.join(path, self.svm_model_name))
             if isfile:
-                self.model = pickle.load(open(path + 'service_classification_bow_svc.pkl', 'rb'))
+                self.model = pickle.load(open(path + self.svm_model_name, 'rb'))
                 return True
             return False
         else:
             return False
         return False
-    
+
     def loadTrainedClassifier(self):
-        """ 
+        """
         Load conceptual embedding trained web service classifier
         :return: string param specifies service class
         """
@@ -423,34 +415,34 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         trained_models_files = self.getTrainedModelName()
         model_path = os.path.join(trained_models_folder, trained_models_files)
         if not (os.path.exists(model_path)):
-            print("+"*40)
+            print("+" * 40)
             print("No training DL service classifier file is exist")
-            print("+"*40)
+            print("+" * 40)
             return False
 
         try:
-            
-            self.classifier_model  = BertForSequenceClassification.from_pretrained(model_path)
-            self.tokenizer_class  = BertTokenizer.from_pretrained(model_path)
-            
-            print("+"*40)
-            print("Trained DL service classifier  is loaded on "+self.device)
-            print("+"*40)
+
+            self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
+            self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
+
+            print("+" * 40)
+            print("Trained DL service classifier  is loaded on " + self.device)
+            print("+" * 40)
 
         except FileNotFoundError:
-            print("+"*40)
+            print("+" * 40)
             print("No training DL service classifier file is exist")
-            print("+"*40)
+            print("+" * 40)
 
         return (self.classifier_model)
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
