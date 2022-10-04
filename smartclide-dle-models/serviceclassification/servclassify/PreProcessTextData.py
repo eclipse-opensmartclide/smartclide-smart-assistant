@@ -2,6 +2,7 @@
 # Eclipse Public License 2.0
 
 import re
+import os
 import pandas as pd
 import numpy as np
 import nltk
@@ -12,17 +13,19 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.tokenize import WhitespaceTokenizer
 from nltk import sent_tokenize, word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
+
+
 # nltk.download('stopwords')
 # nltk.download('wordnet')
 # nltk.download('punkt')
-# nltk.download('omw-1.4') 
-   
+# nltk.download('omw-1.4')
+
 
 class TextDataPreProcess:
 
     def __init__(self):
-        self.level=1
-
+        self.level = 1
+        self.stopwords = '/data/stop_words.txt'
 
     def cleanPunc(self, sentence):
         import re
@@ -33,25 +36,45 @@ class TextDataPreProcess:
         cleaned = cleaned.replace("\n", "")
         return cleaned
 
-    def removeStopWords(self, sentence):
+    def file_to_array(self,file_path):
+        list_of_lines = []
+        with open(file_path, 'r') as f:
+            line = f.read().splitlines()
+            list_of_lines.append(line)
+        return list_of_lines
+
+    def removeStopWords(self, sentence, stopwords_path=''):
         try:
             from nltk.corpus import stopwords
             global re_stop_words
             stop_words = set(stopwords.words('english'))
-            stop_words.update(['monthly', "google", "api", "apis", 'json','Json',"service", "provide","including", "data", "REST", "RESTFUL", "website", "site"])
+            if stopwords_path:
+                stop_words.update(self.file_to_array(stopwords_path))
+            else:
+                packagePath = os.path.abspath(os.path.dirname(__file__))
+                stopwords_path = os.path.join(packagePath + self.stopwords)
+                stopwords = self.file_to_array(stopwords_path)
+                stop_words.update(stopwords[0])
+
         except:
             nltk.download('stopwords')
             from nltk.corpus import stopwords
             global re_stop_words
             stop_words = set(stopwords.words('english'))
-            stop_words.update(['monthly', "google", "api", "apis", 'json','Json',"service", "provide","including", "data", "REST", "RESTFUL", "website", "site"])
-              
+            # if not stopwords_path=='':
+            #     stop_words.update(self.file_to_array(stopwords_path))
+            # else:
+            packagePath = os.path.abspath(os.path.dirname(__file__))
+            stopwords_path = os.path.join(packagePath + self.stopwords)
+            stopwords=self.file_to_array(stopwords_path)
+            stop_words.update(stopwords[0])
+
         re_stop_words = re.compile(r"\b(" + "|".join(stop_words) + ")\\W", re.I)
         return re_stop_words.sub(" ", sentence)
 
     def wordLemmatizer(self, sentence):
-        #nltk.download('punkt')
-        #nltk.download('wordnet')
+        # nltk.download('punkt')
+        # nltk.download('wordnet')
         try:
             from nltk.stem.wordnet import WordNetLemmatizer
             lemmatizer = WordNetLemmatizer()
@@ -59,7 +82,7 @@ class TextDataPreProcess:
         except:
             nltk.download('wordnet')
             nltk.download('punkt')
-            nltk.download('omw-1.4') 
+            nltk.download('omw-1.4')
             from nltk.stem.wordnet import WordNetLemmatizer
             lemmatizer = WordNetLemmatizer()
             lem_sentence = " ".join([lemmatizer.lemmatize(i) for i in sentence])
@@ -75,13 +98,11 @@ class TextDataPreProcess:
         return wordsFreq[:n]
 
     def getCommonWords(self, count_data, countVectorizerOBJ, n):
-#         words = countVectorizerOBJ.get_feature_names_out()
+        #         words = countVectorizerOBJ.get_feature_names_out()
         try:
-              words = countVectorizerOBJ.get_feature_names_out()
+            words = countVectorizerOBJ.get_feature_names_out()
         except:
-              words = countVectorizerOBJ.get_feature_names() 
-
-
+            words = countVectorizerOBJ.get_feature_names()
 
         total_counts = np.zeros(len(words))
         for t in count_data:
@@ -101,4 +122,3 @@ class TextDataPreProcess:
         ulist = []
         [ulist.append(x) for x in l if x not in ulist]
         return ulist
-

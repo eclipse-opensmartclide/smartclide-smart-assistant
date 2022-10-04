@@ -24,7 +24,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 class ServiceClassificationModel(AIPipelineConfiguration):
     """
     This class is part of backend section of SmartCLIDE which include  training and prediction  using
-    text classification models including ML and DL approches 
+    text classification models including ML and DL approches
     """
 
     X = []
@@ -44,12 +44,13 @@ class ServiceClassificationModel(AIPipelineConfiguration):
     trainFeatures = None
     maxLenEmbedding = 80
     rawCodeList = [];
+    classifier_config =None
     tokenizer_class = None
     classifier_model = None
     transformer_model_name = 'bert-base-uncased'
     trained_model_name = f'bert_service_classifier'
     trained_model_folder = 'bert_service_classifier/'
-    svm_model_name = 'service_classification_svm.pkl'
+    svm_model_name = 'service_classification_svm_.pkl'
     method = ['Default', 'BSVM', 'Advanced']
 
     def __init__(self, useSavedModel=True,
@@ -261,33 +262,7 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         if not text:
             raise ValueError("The text input must have at least one character")
 
-    def loadTrainedClassifier(self):
-        """
-        Load trained web service classifier
-        :return: trained model obj
-        """
-        import pickle
-        from transformers import BertForSequenceClassification, AdamW, BertConfig
-        from transformers import BertTokenizer, BertForMaskedLM
 
-        try:
-            trained_models_folder = self.getTrainedModelsDirectory()
-            trained_models_files = self.getTrainedModelName()
-            model_path = os.path.join(trained_models_folder, trained_models_files)
-
-            self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
-            self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
-
-            print("+" * 40)
-            print("Trained model is loaded on " + self.device)
-            print("+" * 40)
-
-        except FileNotFoundError:
-            print("+" * 40)
-            print("No training file is exist GPT2-2-2")
-            print("+" * 40)
-
-        return (self.classifier_model)
 
     def preprocessServicesData(self, clmName, actions=[]):
         """
@@ -364,19 +339,17 @@ class ServiceClassificationModel(AIPipelineConfiguration):
         outputs = self.classifier_model(**inputs)
         probs = outputs[0].softmax(1)
         top_tensors = torch.topk(probs.flatten(), 2).indices
-        first_cat_int = top_tensors[0].item()
-        # print("*"*50)
-        # print(first_cat_int)
-        currentPath = os.path.abspath(os.path.dirname(__file__))
-        df_save = pd.read_csv(os.path.join(currentPath, "data/df_save.csv"))
-        f_class_ = df_save.loc[df_save['category'] == first_cat_int]["label"].values[0]
-        # print("+"*50)
-        # print(f_class_)
-        sec_cat_int = top_tensors[1].item()
-        s_class_ = df_save.loc[df_save['category'] == sec_cat_int]["label"].values[0]
+        # get id and lable from model config
+        id2label =  self.classifier_config.id2label
+        top_cat_id = []
+        for i in range(0, k ):
+            top_cat_id.append(top_tensors[i].item())
+        top_cat_lable = []
+        for i in range(0, k ):
+            class_ = id2label[(top_cat_id[i])]
+            top_cat_lable.append(class_)
 
-        classes = [f_class_, s_class_]
-        return classes
+        return top_cat_lable
 
     import sys
 
@@ -402,47 +375,67 @@ class ServiceClassificationModel(AIPipelineConfiguration):
             return False
         return False
 
+    # def loadTrainedClassifier(self):
+    #     """
+    #     Load conceptual embedding trained web service classifier
+    #     :return: string param specifies service class
+    #     """
+    #     import pickle
+    #     from transformers import BertForSequenceClassification, AdamW, BertConfig
+    #     from transformers import BertTokenizer, BertForMaskedLM
+    #
+    #     trained_models_folder = self.getTrainedModelsDirectory()
+    #     trained_models_files = self.getTrainedModelName()
+    #     model_path = os.path.join(trained_models_folder, trained_models_files)
+    #     if not (os.path.exists(model_path)):
+    #         print("+" * 40)
+    #         print("No training DL service classifier file is exist")
+    #         print("+" * 40)
+    #         return False
+    #
+    #     try:
+    #
+    #         self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
+    #         self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
+    #
+    #         print("+" * 40)
+    #         print("Trained DL service classifier  is loaded on " + self.device)
+    #         print("+" * 40)
+    #
+    #     except FileNotFoundError:
+    #         print("+" * 40)
+    #         print("No training DL service classifier file is exist")
+    #         print("+" * 40)
+    #
+    #     return (self.classifier_model)
     def loadTrainedClassifier(self):
         """
-        Load conceptual embedding trained web service classifier
-        :return: string param specifies service class
+        Load trained web service classifier
+        :return: trained model obj
         """
         import pickle
         from transformers import BertForSequenceClassification, AdamW, BertConfig
-        from transformers import BertTokenizer, BertForMaskedLM
-
-        trained_models_folder = self.getTrainedModelsDirectory()
-        trained_models_files = self.getTrainedModelName()
-        model_path = os.path.join(trained_models_folder, trained_models_files)
-        if not (os.path.exists(model_path)):
-            print("+" * 40)
-            print("No training DL service classifier file is exist")
-            print("+" * 40)
-            return False
-
+        from transformers import BertTokenizer, BertForMaskedLM,BertConfig
         try:
+            # trained_models_folder = self.getTrainedModelsDirectory()
+            # trained_models_files = self.getTrainedModelName()
+            # model_path = os.path.join(trained_models_folder, trained_models_files)
 
-            self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
-            self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
+            # model_path = "zakieh/servclassification"  # Download from model hub
+            # self.classifier_model = BertForSequenceClassification.from_pretrained(model_path)
+            # self.tokenizer_class = BertTokenizer.from_pretrained(model_path)
+            model_hub = "zakieh/serv_classification"
+            self.classifier_model = BertForSequenceClassification.from_pretrained(model_hub,force_download=True)
+            self.tokenizer_class = BertTokenizer.from_pretrained(model_hub,force_download=True)
+            self.classifier_config= BertConfig.from_pretrained(model_hub,force_download=True)
 
             print("+" * 40)
-            print("Trained DL service classifier  is loaded on " + self.device)
+            print("Trained model is loaded on " + self.device)
             print("+" * 40)
 
         except FileNotFoundError:
             print("+" * 40)
-            print("No training DL service classifier file is exist")
+            print("No training file is exist GPT2-2-2")
             print("+" * 40)
 
         return (self.classifier_model)
-
-
-
-
-
-
-
-
-
-
-

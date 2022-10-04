@@ -1,5 +1,6 @@
 include *.csv *.pkl
 recursive-include  servclassify/data *.csv 
+recursive-include  servclassify/data *.txt
 recursive-include  servclassify/trained_models *.csv *.pt *.bin
 recursive-include  servclassify/trained_models/bert_service_classifier *.json *.bin *.txt
 
