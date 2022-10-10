@@ -45,7 +45,7 @@ RUN python3.8 -m pip install --no-cache-dir setuptools wheel  && \
     python3.8 -m spacy download en_core_web_md
 
 # clone smartclide-smart-assistant
-RUN git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+RUN git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 
 # build cbr-gherkin-recommendation
 RUN cd smartclide-smart-assistant/smartclide-dle-models/cbr-gherkin-recommendation && \

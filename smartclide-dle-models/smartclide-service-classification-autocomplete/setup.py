@@ -23,7 +23,7 @@ setup(
     version='1.0',
     packages=find_packages(),
     url='',
-    download_url='https://github.com/eclipse-researchlabs/smartclide-smart-assistant/archive/refs/heads/main.zip',
+    download_url='https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/archive/refs/heads/main.zip',
     license='Copyright',
     author='AIR institute',
     author_email='zakieh@usal.es',
@@ -53,9 +53,9 @@ setup(
     python_requires='>=3',
     keywords=' AI, flask, python',
     project_urls={
-        'Bug Reports': 'https://github.com/eclipse-researchlabs/smartclide-smart-assistant/issues',
-        'Source': 'https://github.com/eclipse-researchlabs/smartclide-smart-assistant',
-        'Documentation': 'https://github.com/eclipse-researchlabs/smartclide-smart-assistant/README.md'
+        'Bug Reports': 'https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/issues',
+        'Source': 'https://github.com/eclipse-opensmartclide/smartclide-smart-assistant',
+        'Documentation': 'https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/README.md'
     },
 )
 

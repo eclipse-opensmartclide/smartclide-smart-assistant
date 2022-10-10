@@ -35,7 +35,7 @@ The following parameter is mandatory to route the requests to this implemented M
 # Quick Installation
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/serviceclassification 
 python3 -m pip install . --upgrade
 ```
@@ -45,7 +45,7 @@ python3 servclassify/examples/classify_service.py
 ```
 
 
-In SmartCLIDE platform, These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
+In SmartCLIDE platform, These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
 
 # Usage
 This library provides two trained models; first, the prediction by ML model. Second, predict using the DL model; the default configuration uses the ML model, which is lighter. You can select method="Default" for using ML model or method= 'Advanced' for using DL model. However, the "AIPipelineConfiguration" class is configured for Default mode; for using  method= 'Advanced', you need to change the configuration in the AIPipelineConfiguration file to set service_classification_method= 'Advanced' in AIPipelineConfiguration.py and reinstall the package.

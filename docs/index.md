@@ -64,7 +64,7 @@ In summary, the available end-points are:
 ### Sub-component Quick Installation
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```bash
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/<sub-component> 
 python3 -m pip install . --upgrade
 ```
@@ -130,7 +130,7 @@ Smartclide provides an environment to support the development of service-oriente
 
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/serviceclassification 
 python3 -m pip install . --upgrade
 ```
@@ -204,7 +204,7 @@ This subcomponent is responsible for generating code based on internal templates
 
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/codeautocomplete 
 python3 -m pip install . --upgrade
 ```
@@ -285,7 +285,7 @@ The acceptance test set suggestion system, based on collaborative filtering tech
 
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/cbr-gherkin-recommendation 
 python3 -m pip install . --upgrade
 ```
