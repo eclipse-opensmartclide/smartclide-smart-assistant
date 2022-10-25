@@ -30,7 +30,7 @@ SmartCLIDE tries to use a language modeling pipeline to generate one-line codes 
 # Quick Installation
 The trained models have been packaged using the Python Setuptools library. Therefore, this component need to install the related package by cloning the package, browsing to main directory, and executing “python3 -m pip install . --upgrade” command. 
 ```
-git clone https://github.com/eclipse-researchlabs/smartclide-smart-assistant.git
+git clone https://github.com/eclipse-opensmartclide/smartclide-smart-assistant.git
 cd smartclide-dle-models/codeautocomplete 
 python3 -m pip install . --upgrade
 ```
@@ -40,7 +40,7 @@ python3 servcodegen/examples/generate_code.py
 ```
 
 
-In SmartCLIDE platform, These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
+In SmartCLIDE platform, These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
 
 # Usage
 
