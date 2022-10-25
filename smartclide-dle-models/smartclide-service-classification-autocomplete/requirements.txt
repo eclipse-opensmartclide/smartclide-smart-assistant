@@ -11,7 +11,7 @@ sentence-transformers
 tensorflow
 torch
 flask
-
+werkzeug==2.0.*
 
 
 

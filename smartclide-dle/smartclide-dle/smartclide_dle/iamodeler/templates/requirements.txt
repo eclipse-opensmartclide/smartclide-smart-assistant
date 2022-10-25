@@ -1,5 +1,5 @@
 Flask==1.1.1
 Flask-Cors==3.0.8
 flask-restx>=0.2
-werkzeug>=1.0
+werkzeug==2.0.*
 {{model_packages}}
