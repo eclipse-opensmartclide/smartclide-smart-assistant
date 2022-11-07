@@ -15,11 +15,18 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
   publish:
     runs-on: ubuntu-latest
     permissions:
         packages: write
     steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build and Publish Docker Image
