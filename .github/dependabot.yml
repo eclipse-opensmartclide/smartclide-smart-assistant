@@ -1,0 +1,62 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle-models/cbr-gherkin-recommendation"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle-models/codeautocomplete"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle-models/serviceclassification"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle-models/smartclide-service-classification-autocomplete"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle/smartclide-dle"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle/smartclide-dle/smartclide_dle/iamodeler/templates"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-dle/smartclide-smart-assistant"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "pip"
+    directory: "/smartclide-template-code-generation"
+    schedule:
+      # Check for python dependency updates every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      # Check for updates to container images every weekday at 08:00 UTC
+      interval: "daily"
+      time: "08:00"
