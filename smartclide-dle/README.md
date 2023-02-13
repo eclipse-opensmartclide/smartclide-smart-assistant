@@ -13,10 +13,9 @@ sudo npm install -g pm2
 ## Architecture
 
 The models served by the DLE are defined into the following repositories:
-- **recommendation of next node in a BPMN file**: https://github.com/AIRInstitute/smartclide-bpnm-poc
-- **code skeleton generation via BPMN file**: https://github.com/AIRInstitute/smartclide-template-code-generation
-- **various models, beign the most importants the CBR based gherking reccomendation with BPMN file, service classsification and code autocomplete generation with markov chains**: https://github.com/AIRInstitute/smartclide-dle-models
-
+- Code skeleton generation via BPMN file** [(More info)](https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/tree/main/smartclide-template-code-generation) 
+- Various models, beign the most importants the CBR based gherking reccomendation with BPMN file, service classsification and code autocomplete generation [(More info)](https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/tree/main/smartclide-dle-models
+)  
 <div align="center">
   <img src="https://github.com/AIRInstitute/smartclide-dle/blob/main/_static/architecture.jpg" hspace="20">
 </div>
