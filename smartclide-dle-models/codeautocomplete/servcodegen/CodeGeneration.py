@@ -72,8 +72,8 @@ class CodeGenerationModel(AIPipelineConfiguration):
                  batch_size=16,
                  seqx_length=0,
                  code_vocab_size=0,
-                 temperature_GPT=0.6,
-                 top_k_GPT=50,
+                 temperature_GPT=0.7,
+                 top_k_GPT=40,
                  top_p_GPT=0.85,
                  repetition_penalty_GPT=1.0
                  ):
@@ -158,8 +158,11 @@ class CodeGenerationModel(AIPipelineConfiguration):
         except KeyError:
             raise KeyError("the model {} you specified is not supported.)")
 
+        # Get model from online repositry
+        uploaded_model = 'zakieh/servicecg'
         tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
-        model_class = GPT2LMHeadModel.from_pretrained(self.getTransformerModel())
+        # model_class = GPT2LMHeadModel.from_pretrained(self.getTransformerModel())
+        model_class = GPT2LMHeadModel.from_pretrained(uploaded_model)
         model_class = model_class.to(self.device)
         model_class.train()
         optimizer = AdamW(model_class.parameters(), lr=self.learning_rate)
@@ -270,9 +273,9 @@ class CodeGenerationModel(AIPipelineConfiguration):
             "codeSuggLines_error": False,
         }
 
-        if len(seed_text) < 1 and len(seed_text) > 200:
+        if len(seed_text) < 1 or len(seed_text) > 200:
             result["code_input_error"] = True
-            logging.info("The models need input between 1-" + str(self.max_codeSuggLen) + " character ")
+            logging.info("The models need input between 1-200 character ")
 
         if int(max_line_return) > self.max_line_return:
             result["codeSuggLines_error"] = True
@@ -292,15 +295,25 @@ class CodeGenerationModel(AIPipelineConfiguration):
         """
         self.generatedCodesList = []
         self.seed_text = seed_text
-        self.predict_code_length = lengthCodeLine
         self.max_line_return = max_line_return
 
         encoded_prompt = self.tokenizer_class.encode(self.seed_text, add_special_tokens=False, return_tensors="pt")
         encoded_prompt = encoded_prompt.to(self.device)
 
+        # predict output len based on input
+        self.predict_code_length = lengthCodeLine
+        # calculate input token
+        input_token_len = len(self.tokenizer_class(self.seed_text)['input_ids'])
+
+        if input_token_len < 10:
+            max_length = input_token_len + self.max_codeSuggLen + 10
+        else:
+            max_length = input_token_len + self.max_codeSuggLen
+
+        print(max_length)
         output_sequences = self.generatorModel.generate(
             input_ids=encoded_prompt,
-            max_length=self.predict_code_length,
+            max_length=int(max_length),
             # num_beams=self.max_line_return,
             do_sample=True,
             top_k=self.top_k_GPT,
@@ -309,14 +322,18 @@ class CodeGenerationModel(AIPipelineConfiguration):
             num_return_sequences=self.max_line_return,
         )
 
-        text = None
         for output in output_sequences:
-            generated_sequence = output.tolist()
-            code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True,
-                                                    skip_special_tokens=True)
-            code_line = code_line[: code_line.find(self.stop_token) if self.stop_token == 1 else None]
-            self.generatedCodesList.append(self.post_process_code(code_line))
+            try:
+                generated_sequence = output.tolist()
+                code_line = self.tokenizer_class.decode(generated_sequence, clean_up_tokenization_spaces=True,
+                                                        skip_special_tokens=True)
+                code_line = code_line[: code_line.find(self.stop_token) if self.stop_token == 1 else None]
+                self.generatedCodesList.append(self.post_process_code(code_line))
+            except:
+                pass
+        if len(self.generatedCodesList) > 0:
             self.generatedCodesList = list(dict.fromkeys(self.generatedCodesList))
+
         return self.generatedCodesList
 
     def post_process_code(self, code):
