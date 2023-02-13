@@ -34,7 +34,7 @@ python3 -m pip install . --upgrade
 ```
  
 
-These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-opensmartclide/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
+These models need a  gateway between the trained models and user interfaces. [smartclide-dle](https://github.com/eclipse-researchlabs/smartclide-smart-assistant/tree/main/smartclide-dle) component provides API for using these models.
 
 
 The minimum requirment for using this package is 43GB storage and 16GB RAM requirment. the reasen is the used packages after extraction is going to exceed more spaces.
