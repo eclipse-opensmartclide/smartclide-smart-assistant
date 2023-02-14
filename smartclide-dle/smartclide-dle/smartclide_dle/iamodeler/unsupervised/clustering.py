@@ -51,8 +51,12 @@ class Clustering(Persistable):
         self.nlp_config = nlp_config
         self.knn_pars = knn_pars
 
+        # self.pipeline = pipeline.Pipeline(
+        #     steps=[("preprocessor", get_preprocessor(source.types, scaler=scaler, nlp_config=nlp_config)),
+        #            ("cluster", clustering_methods[method](**self.parameters))])
+        nlp_config = []
         self.pipeline = pipeline.Pipeline(
-            steps=[("preprocessor", get_preprocessor(source.types, scaler=scaler, nlp_config=nlp_config)),
+            steps=[("preprocessor", get_preprocessor(source.types, scaler=scaler)),
                    ("cluster", clustering_methods[method](**self.parameters))])
 
         self.labels = None
