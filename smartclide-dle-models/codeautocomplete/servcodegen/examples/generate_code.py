@@ -31,7 +31,7 @@ Method="GPT-2"
 lang="java"
 max_lenth=20
 max_sugges_line=3
-code_input="file=new"
+code_input="str = "
 result=codecomplete_obj.predict2(Method,lang,code_input,max_lenth,max_sugges_line)
 
 print("-" * 40)
