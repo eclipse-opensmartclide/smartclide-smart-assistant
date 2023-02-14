@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2e554ad4-2a95-452e-ab02-d03d98a0d34c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/smartclide-dle-models/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/MANIFEST.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/.ipynb_checkpoints/preprocess_crawled_data_class-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_3d+print+service_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_3d+vector+space_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_advertising+marketing+campaing_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_airline+flight_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_airport_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_album+website+url_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_analytics_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_app+translation+tool_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_bank+pay+checkout_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_bitcoin_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_blockchain+coin_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_cerdit+card+customer_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_chat+website+rest_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_cloud+enterprise_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_commerce_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_customer+tool+manage_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_database+sequence+analysis_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_delivery+customer+web_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_document+text+language_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_education+health_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_entertainment+sports_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_event+news+website_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_forecast+weather_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_game+team+player_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_games_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_government_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_hotel+travel+website_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_location+request+weather_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_mapping_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_messaging+message+app_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_messaging_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_number+message+device_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_password+request+rest_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_payment+transaction+merchant_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_payments_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_phone+call+voice_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_photo+image+upload_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_photos_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_platform_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_post+profile+website_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_project+location+new_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_protein+gene+research_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_route+location_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_science_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_security+authentication+device_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_security_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_server+sensor+rest_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_shipment+shipping+tracking_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_shipping_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_site+event+website_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_sms+bulk+system_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_social+site+media_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_socialmedia_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_sport+website+event_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_station+transit+system_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_statistic+sport_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_telephony_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_textprocessing+translation_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_track+playlist+audio_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_vehicle+bus+train_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_video+music+audio_09_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_video+music+player_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_weather_09_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/output_/GitHub_kw_web+internet+hosting_06_08_2021.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/scripts/preprocess_crawled_data_class.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/AIPipelineConfiguration.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/AutocompleteCode.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/CodeGeneration.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/CodeProcess.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/PreProcessTextData.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/PredictServiceClass.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/ServiceClassification.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/ServiceCluster.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/api_java_poject_source_codes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/df_save.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/programmableweb_apis.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/services_clustered_augmented_train.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/services_clustered_augmented_train_old.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/services_clustered_test.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/services_clustered_test_old.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/data/top_poject_source_codes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/examples/classify_service.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/examples/generate_code.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/project_source_codes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/trained_models/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smartclide-dle-models/smartclide-service-classification-autocomplete/smartclide_service_classification_autocomplete/trained_models/service_classification_bow_svc.pkl" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2Lj6EWOTLoh1XkXvqiUuXUerKaK" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/zakieh/Desktop/00_eclipse_update_repo/smartclide-smart-assistant",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2e554ad4-2a95-452e-ab02-d03d98a0d34c" name="Changes" comment="" />
+      <created>1676372033092</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1676372033092</updated>
+      <workItem from="1676372036744" duration="412000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
