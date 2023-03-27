@@ -160,9 +160,10 @@ class CodeGenerationModel(AIPipelineConfiguration):
 
         # Get model from online repositry
         uploaded_model = 'zakieh/servicecg'
+
         tokenizer_class = GPT2Tokenizer.from_pretrained(self.getTransformerModel())
         # model_class = GPT2LMHeadModel.from_pretrained(self.getTransformerModel())
-        model_class = GPT2LMHeadModel.from_pretrained(uploaded_model)
+        model_class = GPT2LMHeadModel.from_pretrained(uploaded_model, force_download=True)
         model_class = model_class.to(self.device)
         model_class.train()
         optimizer = AdamW(model_class.parameters(), lr=self.learning_rate)
@@ -310,7 +311,6 @@ class CodeGenerationModel(AIPipelineConfiguration):
         else:
             max_length = input_token_len + self.max_codeSuggLen
 
-        print(max_length)
         output_sequences = self.generatorModel.generate(
             input_ids=encoded_prompt,
             max_length=int(max_length),
@@ -334,7 +334,21 @@ class CodeGenerationModel(AIPipelineConfiguration):
         if len(self.generatedCodesList) > 0:
             self.generatedCodesList = list(dict.fromkeys(self.generatedCodesList))
 
+        self.process_output_list(seed_text,self.generatedCodesList)
         return self.generatedCodesList
+
+    def process_output_list(self, code_input, generated_codes_list=[]):
+        code_list = []
+        if not generated_codes_list:
+            generated_codes_list = self.generatedCodesList
+        for row in generated_codes_list:
+            if row.startswith(code_input):
+                suggestion = row.replace(code_input, "")
+                code_list.append(suggestion)
+            else:
+                code_list.append(row)
+        self.generatedCodesList = code_list
+        return code_list
 
     def post_process_code(self, code):
         import re
